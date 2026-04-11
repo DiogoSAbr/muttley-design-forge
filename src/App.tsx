@@ -4,6 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import EmitPage from "./pages/EmitPage.tsx";
+import HistoryPage from "./pages/HistoryPage.tsx";
+import ReceiverProfilePage from "./pages/ReceiverProfilePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -15,8 +19,12 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/emit" element={<EmitPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/receivers/:id" element={<ReceiverProfilePage />} />
+          <Route path="/receivers" element={<ReceiverProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
