@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 const STEPS = ["Buscar aluno", "Selecionar medalha", "Confirmar"];
 
 const mockStudents = [
-  { id: "STU-001", name: "Ana Beatriz Ferreira", email: "ana.ferreira@email.com", phone: "(11) 98765-4321" },
-  { id: "STU-002", name: "João Mendes Costa", email: "joao.mendes@email.com", phone: "(21) 91234-5678" },
-  { id: "STU-003", name: "Maria Clara Oliveira", email: "maria.oliveira@email.com", phone: "(31) 99876-5432" },
+  { ra: "STU-001", name: "Ana Beatriz Ferreira", email: "ana.ferreira@email.com", phone: "(11) 98765-4321" },
+  { ra: "STU-002", name: "João Mendes Costa", email: "joao.mendes@email.com", phone: "(21) 91234-5678" },
+  { ra: "STU-003", name: "Maria Clara Oliveira", email: "maria.oliveira@email.com", phone: "(31) 99876-5432" },
 ];
 
 const mockMedals = [
@@ -40,7 +40,7 @@ export default function EmitPage() {
     ? mockStudents.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.id.toLowerCase().includes(searchQuery.toLowerCase())
+        s.ra.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
 
@@ -75,7 +75,7 @@ export default function EmitPage() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setSelectedStudent(null); }}
-                        placeholder="Nome, e-mail ou ID..."
+                        placeholder="Nome, e-mail ou RA..."
                         className="w-full h-10 pl-9 pr-9 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
                       />
                       {searchQuery && (
@@ -95,17 +95,17 @@ export default function EmitPage() {
                       ) : (
                         filteredStudents.map((student) => (
                           <button
-                            key={student.id}
+                            key={student.ra}
                             onClick={() => setSelectedStudent(student)}
                             className={cn(
                               "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-accent/50 transition-colors",
-                              selectedStudent?.id === student.id && "bg-accent"
+                              selectedStudent?.ra === student.ra && "bg-accent"
                             )}
                           >
                             <UserAvatar name={student.name} size="sm" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-card-foreground truncate">{student.name}</p>
-                              <p className="text-xs text-muted-foreground">{student.email} · {student.id}</p>
+                              <p className="text-xs text-muted-foreground">{student.email} · {student.ra}</p>
                             </div>
                           </button>
                         ))

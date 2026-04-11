@@ -20,29 +20,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left panel */}
-      <div className="hidden lg:flex lg:flex-1 bg-sidebar items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex lg:flex-1 bg-primary-foreground items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-medal/10" />
         <div className="relative z-10 text-center px-12 max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-6">
-            <Award className="w-9 h-9 text-primary-foreground" />
-          </div>
+          <img src="./FATEC_ZONA_LESTE_LOGO.png" alt="Muttley" className="w-48 h-32 bg-transparent flex items-center justify-center mx-auto mb-6" />
           <h1 className="text-3xl font-semibold text-sidebar-primary-foreground mb-3 tracking-tight">
             Muttley
           </h1>
           <p className="text-sidebar-muted text-base leading-relaxed">
             Emita medalhas digitais de competências e publique automaticamente no LinkedIn dos seus alunos.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-6 text-sidebar-muted text-sm">
-            <div className="text-center">
-              <p className="text-2xl font-semibold text-sidebar-foreground">12.4k</p>
-              <p>Medalhas emitidas</p>
-            </div>
-            <div className="w-px h-10 bg-sidebar-border" />
-            <div className="text-center">
-              <p className="text-2xl font-semibold text-sidebar-foreground">3.2k</p>
-              <p>Profissionais</p>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -96,7 +83,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" size="lg" loading={loading}>
+            <Button type="submit" className="w-full bg-primary" size="lg" loading={loading}>
               Entrar
             </Button>
           </form>
