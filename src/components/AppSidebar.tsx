@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
+import { NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Award,
@@ -7,6 +7,7 @@ import {
   Users,
   Medal,
   LogOut,
+  Calendar,
 } from "lucide-react";
 import { UserAvatar } from "./UserAvatar";
 
@@ -15,11 +16,13 @@ const navItems = [
   { label: "Emitir medalha", path: "/emit", icon: Award },
   { label: "Histórico", path: "/history", icon: History },
   { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
-  { label: "Receptores", path: "/receivers", icon: Users },
+  { label: "Alunos", path: "/students", icon: Users },
+  { label: "Eventos", path: "/events", icon: Calendar }
 ];
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-sidebar flex flex-col z-40">
@@ -58,12 +61,16 @@ export function AppSidebar() {
       {/* User profile footer */}
       <div className="px-3 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3">
-          <UserAvatar name="Prof. Carlos Silva" size="sm" />
+          <UserAvatar name="Prof. Diogo Santana" size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-sidebar-foreground truncate font-medium">Carlos Silva</p>
+            <p className="text-sm text-sidebar-foreground truncate font-medium">Diogo Santana</p>
             <p className="text-[11px] text-sidebar-muted truncate">Professor</p>
           </div>
-          <button className="text-sidebar-muted hover:text-sidebar-foreground transition-colors" title="Sair">
+          <button
+            className="text-sidebar-muted hover:text-sidebar-foreground transition-colors"
+            title="Sair"
+            onClick={() => navigate("/login")}
+          >
             <LogOut className="w-4 h-4" />
           </button>
         </div>
