@@ -209,15 +209,6 @@ export default function EmitPage() {
                 </div>
               </div>
 
-              <div className="bg-warning-light border border-warning/20 rounded-lg px-4 py-3 flex items-start gap-3">
-                <Shield className="w-4 h-4 text-warning-foreground mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-warning-foreground leading-relaxed">
-                  <span className="font-medium">Aviso LGPD:</span> Ao confirmar, os dados de{" "}
-                  <span className="font-medium">{selectedStudent!.name}</span> serão compartilhados com o LinkedIn conforme a Lei Geral de Proteção de Dados.{" "}
-                  <button className="underline font-medium">Saiba mais</button>
-                </p>
-              </div>
-
               <div className="flex justify-between">
                 <Button variant="ghost" onClick={() => setStep(1)}>
                   <ArrowLeft className="w-4 h-4" /> Voltar

@@ -25,7 +25,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">Bem-vindo, Prof. Carlos Silva</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Bem-vindo, Prof. Diogo Santana</p>
             </div>
             <Button onClick={() => navigate("/emit")} size="lg">
               <Plus className="w-4 h-4" />
@@ -33,19 +33,6 @@ export default function DashboardPage() {
             </Button>
           </div>
 
-          {/* Alert banner */}
-          <div className="bg-warning-light border border-warning/20 rounded-lg px-4 py-3 flex items-center gap-3 mb-6">
-            <AlertTriangle className="w-4 h-4 text-warning-foreground flex-shrink-0" />
-            <p className="text-sm text-warning-foreground">
-              <span className="font-medium">1 medalha com erro de publicação.</span>{" "}
-              Verifique o histórico para tentar novamente.
-            </p>
-            <Button variant="ghost" size="sm" className="ml-auto text-warning-foreground" onClick={() => navigate("/history")}>
-              Ver detalhes
-            </Button>
-          </div>
-
-          {/* Metrics */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <MetricCard
               label="Total emitido"
