@@ -584,7 +584,7 @@ export default function EventsPage() {
                       {formatDate(ev.startDate)}{ev.endDate ? ` — ${formatDate(ev.endDate)}` : ""}
                     </td>
                     <td className="p-3">
-                      <StatusBadge status={statusMap[ev.status].variant} label={statusMap[ev.status].label} />
+                      <StatusBadge variant={statusMap[ev.status].variant}>{statusMap[ev.status].label}</StatusBadge>
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
