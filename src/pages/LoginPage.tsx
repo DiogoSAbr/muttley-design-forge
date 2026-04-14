@@ -56,7 +56,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="seu@email.com"
                 className="w-full h-10 px-3 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-shadow"
-                defaultValue="carlos.silva@universidade.edu.br"
+                defaultValue="diogo.santana@professor.cps.com.br"
               />
             </div>
 

@@ -6,11 +6,11 @@ import { Award, Linkedin, AlertTriangle, Plus, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const recentEmissions = [
-  { name: "Certificação em React Avançado", issuer: "Prof. Carlos Silva", date: "10/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Ana Beatriz" },
-  { name: "Liderança de Equipes", issuer: "Prof. Carlos Silva", date: "09/04/2026", category: "Liderança", linkedInStatus: "published" as const, receiver: "João Mendes" },
-  { name: "Comunicação Eficaz", issuer: "Prof. Carlos Silva", date: "08/04/2026", category: "Comunicação", linkedInStatus: "pending" as const, receiver: "Maria Costa" },
-  { name: "Gestão de Projetos Ágeis", issuer: "Prof. Carlos Silva", date: "07/04/2026", category: "Gestão", linkedInStatus: "error" as const, receiver: "Pedro Santos" },
-  { name: "Python para Data Science", issuer: "Prof. Carlos Silva", date: "06/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Camila Rocha" },
+  { name: "Certificação em React Avançado", issuer: "Prof. Diogo Santana", date: "10/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Ana Beatriz" },
+  { name: "Liderança de Equipes", issuer: "Prof. Diogo Santana", date: "09/04/2026", category: "Liderança", linkedInStatus: "published" as const, receiver: "João Mendes" },
+  { name: "Comunicação Eficaz", issuer: "Prof. Diogo Santana", date: "08/04/2026", category: "Comunicação", linkedInStatus: "pending" as const, receiver: "Maria Costa" },
+  { name: "Gestão de Projetos Ágeis", issuer: "Prof. Diogo Santana", date: "07/04/2026", category: "Gestão", linkedInStatus: "error" as const, receiver: "Pedro Santos" },
+  { name: "Python para Data Science", issuer: "Prof. Diogo Santana", date: "06/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Camila Rocha" },
 ];
 
 export default function DashboardPage() {
