@@ -1,0 +1,22 @@
+{
+    "mockStudents": [
+        {
+            "ra": "STU-001",
+            "name": "Ana Beatriz Ferreira",
+            "email": "ana.ferreira@email.com",
+            "phone": "(11) 98765-4321"
+        },
+        {
+            "ra": "STU-002",
+            "name": "João Mendes Costa",
+            "email": "joao.mendes@email.com",
+            "phone": "(21) 91234-5678"
+        },
+        {
+            "ra": "STU-003",
+            "name": "Maria Clara Oliveira",
+            "email": "maria.oliveira@email.com",
+            "phone": "(31) 99876-5432"
+        }
+    ]
+}

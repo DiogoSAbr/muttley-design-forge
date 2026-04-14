@@ -8,23 +8,13 @@ import {
   Search, X, Check, Award, ArrowRight, ArrowLeft, Loader2, Shield, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import mockStudentsData from "../mock/Student.json";
+import mockMedalsData from "../mock/Medals.json";
 
 const STEPS = ["Buscar aluno", "Selecionar medalha", "Confirmar"];
 
-const mockStudents = [
-  { ra: "STU-001", name: "Ana Beatriz Ferreira", email: "ana.ferreira@email.com", phone: "(11) 98765-4321" },
-  { ra: "STU-002", name: "João Mendes Costa", email: "joao.mendes@email.com", phone: "(21) 91234-5678" },
-  { ra: "STU-003", name: "Maria Clara Oliveira", email: "maria.oliveira@email.com", phone: "(31) 99876-5432" },
-];
-
-const mockMedals = [
-  { id: "1", name: "Certificação em React Avançado", description: "Domínio de hooks, context API e patterns avançados.", category: "Tecnologia", keywords: ["React", "Frontend", "JavaScript"] },
-  { id: "2", name: "Liderança de Equipes", description: "Habilidades de gestão e motivação de times.", category: "Liderança", keywords: ["Liderança", "Gestão", "Soft Skills"] },
-  { id: "3", name: "Comunicação Eficaz", description: "Técnicas de apresentação e comunicação interpessoal.", category: "Comunicação", keywords: ["Comunicação", "Apresentação"] },
-  { id: "4", name: "Gestão de Projetos Ágeis", description: "Scrum, Kanban e metodologias ágeis aplicadas.", category: "Gestão", keywords: ["Agile", "Scrum", "Kanban"] },
-  { id: "5", name: "Python para Data Science", description: "Análise de dados com Pandas, NumPy e visualização.", category: "Tecnologia", keywords: ["Python", "Data Science", "Machine Learning"] },
-  { id: "6", name: "Design Thinking", description: "Metodologia centrada no usuário para inovação.", category: "Gestão", keywords: ["Design Thinking", "Inovação", "UX"] },
-];
+const mockStudents = mockStudentsData?.mockStudents;
+const mockMedals = mockMedalsData?.mockMedals;
 
 type EmissionPhase = "idle" | "registering" | "publishing" | "notifying" | "success" | "partial-error";
 
@@ -38,10 +28,10 @@ export default function EmitPage() {
 
   const filteredStudents = searchQuery.length > 1
     ? mockStudents.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.ra.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.ra.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : [];
 
   const handleEmit = () => {
@@ -61,7 +51,6 @@ export default function EmitPage() {
 
           <EmissionStepper currentStep={step} steps={STEPS} className="mb-10" />
 
-          {/* STEP 1: Search student */}
           {step === 0 && (
             <div className="space-y-4">
               {!confirmedStudent ? (
@@ -151,7 +140,6 @@ export default function EmitPage() {
             </div>
           )}
 
-          {/* STEP 2: Select medal */}
           {step === 1 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">Escolha o tipo de medalha para {selectedStudent?.name}.</p>
@@ -196,7 +184,6 @@ export default function EmitPage() {
             </div>
           )}
 
-          {/* STEP 3: Confirm */}
           {step === 2 && emissionPhase === "idle" && (
             <div className="space-y-6">
               <div className="bg-card border border-border rounded-xl p-6 text-center">
@@ -220,7 +207,6 @@ export default function EmitPage() {
             </div>
           )}
 
-          {/* Emission progress */}
           {step === 2 && emissionPhase !== "idle" && (
             <div className="bg-card border border-border rounded-xl p-8 text-center">
               {emissionPhase === "success" ? (

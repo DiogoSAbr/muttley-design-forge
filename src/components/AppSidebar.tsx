@@ -8,6 +8,7 @@ import {
   Medal,
   LogOut,
   Calendar,
+  Presentation,
 } from "lucide-react";
 import { UserAvatar } from "./UserAvatar";
 
@@ -17,7 +18,8 @@ const navItems = [
   { label: "Histórico", path: "/history", icon: History },
   { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
   { label: "Alunos", path: "/students", icon: Users },
-  { label: "Eventos", path: "/events", icon: Calendar }
+  { label: "Eventos", path: "/events", icon: Calendar },
+  { label: "Professores", path: "/teachers", icon: Presentation }
 ];
 
 export function AppSidebar() {
@@ -26,7 +28,6 @@ export function AppSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-sidebar flex flex-col z-40">
-      {/* Logo */}
       <div className="px-5 py-6 flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <Award className="w-5 h-5 text-primary-foreground" />
@@ -36,7 +37,6 @@ export function AppSidebar() {
         </span>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-3 space-y-0.5">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -58,7 +58,6 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* User profile footer */}
       <div className="px-3 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3">
           <UserAvatar name="Prof. Diogo Santana" size="sm" />

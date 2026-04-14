@@ -1,0 +1,69 @@
+{
+    "mockMedals": [
+        {
+            "id": "1",
+            "name": "Certificação em React Avançado",
+            "description": "Domínio de hooks, context API e patterns avançados.",
+            "category": "Tecnologia",
+            "keywords": [
+                "React",
+                "Frontend",
+                "JavaScript"
+            ]
+        },
+        {
+            "id": "2",
+            "name": "Liderança de Equipes",
+            "description": "Habilidades de gestão e motivação de times.",
+            "category": "Liderança",
+            "keywords": [
+                "Liderança",
+                "Gestão",
+                "Soft Skills"
+            ]
+        },
+        {
+            "id": "3",
+            "name": "Comunicação Eficaz",
+            "description": "Técnicas de apresentação e comunicação interpessoal.",
+            "category": "Comunicação",
+            "keywords": [
+                "Comunicação",
+                "Apresentação"
+            ]
+        },
+        {
+            "id": "4",
+            "name": "Gestão de Projetos Ágeis",
+            "description": "Scrum, Kanban e metodologias ágeis aplicadas.",
+            "category": "Gestão",
+            "keywords": [
+                "Agile",
+                "Scrum",
+                "Kanban"
+            ]
+        },
+        {
+            "id": "5",
+            "name": "Python para Data Science",
+            "description": "Análise de dados com Pandas, NumPy e visualização.",
+            "category": "Tecnologia",
+            "keywords": [
+                "Python",
+                "Data Science",
+                "Machine Learning"
+            ]
+        },
+        {
+            "id": "6",
+            "name": "Design Thinking",
+            "description": "Metodologia centrada no usuário para inovação.",
+            "category": "Gestão",
+            "keywords": [
+                "Design Thinking",
+                "Inovação",
+                "UX"
+            ]
+        }
+    ]
+}
