@@ -3,14 +3,11 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { MedalCard } from "@/components/MedalCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Linkedin, ExternalLink, Award } from "lucide-react";
+import { Mail, Phone, Linkedin, ExternalLink } from "lucide-react";
+import type { Receiver } from "@/models/Receiver/Receiver";
+import receiverData from "@/mock/Receiver.json";
 
-const receiverMedals = [
-  { name: "Certificação em React Avançado", issuer: "Prof. Carlos Silva", date: "10/04/2026", category: "Tecnologia", linkedInStatus: "published" as const },
-  { name: "Liderança de Equipes", issuer: "Prof. Carlos Silva", date: "15/03/2026", category: "Liderança", linkedInStatus: "published" as const },
-  { name: "Comunicação Eficaz", issuer: "Profa. Maria Santos", date: "20/02/2026", category: "Comunicação", linkedInStatus: "pending" as const },
-  { name: "Python para Data Science", issuer: "Prof. Carlos Silva", date: "10/01/2026", category: "Tecnologia", linkedInStatus: "published" as const },
-];
+const receiver: Receiver = receiverData.mockReceivers[0] as Receiver;
 
 export default function ReceiverProfilePage() {
   return (
@@ -18,20 +15,19 @@ export default function ReceiverProfilePage() {
       <AppSidebar />
       <main className="ml-60 p-8">
         <div className="max-w-3xl mx-auto animate-fade-in">
-          {/* Profile header */}
           <div className="bg-card border border-border rounded-xl p-6 mb-6 shadow-card">
             <div className="flex items-start gap-5">
-              <UserAvatar name="Ana Beatriz Ferreira" size="lg" />
+              <UserAvatar name={receiver.name} size="lg" />
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl font-semibold text-card-foreground">Ana Beatriz Ferreira</h1>
-                <p className="text-xs text-muted-foreground mt-0.5 font-mono">ID: STU-001</p>
+                <h1 className="text-xl font-semibold text-card-foreground">{receiver.name}</h1>
+                <p className="text-xs text-muted-foreground mt-0.5 font-mono">ID: {receiver.id}</p>
 
                 <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5" /> ana.ferreira@email.com
+                    <Mail className="w-3.5 h-3.5" /> {receiver.email}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5" /> (11) 98765-4321
+                    <Phone className="w-3.5 h-3.5" /> {receiver.phone}
                   </span>
                 </div>
 
@@ -46,12 +42,11 @@ export default function ReceiverProfilePage() {
             </div>
           </div>
 
-          {/* Medals section */}
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-medium text-foreground">Medalhas</h2>
-                <StatusBadge variant="neutral" size="sm">{receiverMedals.length}</StatusBadge>
+                <StatusBadge variant="neutral" size="sm">{receiver.medals.length}</StatusBadge>
               </div>
               <div className="flex items-center gap-2">
                 <select className="h-8 px-2 rounded-md border border-input bg-card text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1">
@@ -64,7 +59,7 @@ export default function ReceiverProfilePage() {
             </div>
 
             <div className="space-y-2">
-              {receiverMedals.map((medal, idx) => (
+              {receiver.medals.map((medal, idx) => (
                 <MedalCard
                   key={idx}
                   name={medal.name}

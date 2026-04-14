@@ -1,0 +1,41 @@
+{
+    "mockReceivers": [
+        {
+            "id": "STU-001",
+            "name": "Ana Beatriz Ferreira",
+            "email": "ana.ferreira@email.com",
+            "phone": "(11) 98765-4321",
+            "linkedinUrl": "https://linkedin.com/in/anabeatriz",
+            "medals": [
+                {
+                    "name": "Certificação em React Avançado",
+                    "issuer": "Prof. Carlos Silva",
+                    "date": "10/04/2026",
+                    "category": "Tecnologia",
+                    "linkedInStatus": "published"
+                },
+                {
+                    "name": "Liderança de Equipes",
+                    "issuer": "Prof. Carlos Silva",
+                    "date": "15/03/2026",
+                    "category": "Liderança",
+                    "linkedInStatus": "published"
+                },
+                {
+                    "name": "Comunicação Eficaz",
+                    "issuer": "Profa. Maria Santos",
+                    "date": "20/02/2026",
+                    "category": "Comunicação",
+                    "linkedInStatus": "pending"
+                },
+                {
+                    "name": "Python para Data Science",
+                    "issuer": "Prof. Carlos Silva",
+                    "date": "10/01/2026",
+                    "category": "Tecnologia",
+                    "linkedInStatus": "published"
+                }
+            ]
+        }
+    ]
+}

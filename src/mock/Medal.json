@@ -1,0 +1,52 @@
+{
+    "mockMedals": [
+        {
+            "id": "1",
+            "name": "Certificação em React Avançado",
+            "description": "Domínio avançado de React, hooks e patterns.",
+            "category": "Tecnologia",
+            "keywords": ["React", "TypeScript", "Hooks"],
+            "active": true
+        },
+        {
+            "id": "2",
+            "name": "Liderança de Equipes",
+            "description": "Habilidades de gestão e motivação de times.",
+            "category": "Liderança",
+            "keywords": ["Liderança", "Gestão", "Soft Skills"],
+            "active": true
+        },
+        {
+            "id": "3",
+            "name": "Comunicação Eficaz",
+            "description": "Técnicas de apresentação e comunicação interpessoal.",
+            "category": "Comunicação",
+            "keywords": ["Comunicação", "Apresentação"],
+            "active": true
+        },
+        {
+            "id": "4",
+            "name": "Gestão de Projetos Ágeis",
+            "description": "Scrum, Kanban e metodologias ágeis aplicadas.",
+            "category": "Gestão",
+            "keywords": ["Scrum", "Kanban", "Sprint Planning"],
+            "active": true
+        },
+        {
+            "id": "5",
+            "name": "Python para Data Science",
+            "description": "Análise de dados com Pandas, NumPy e visualização.",
+            "category": "Tecnologia",
+            "keywords": ["Python", "Data Science", "Machine Learning"],
+            "active": false
+        },
+        {
+            "id": "6",
+            "name": "Design Thinking",
+            "description": "Metodologia centrada no usuário para inovação.",
+            "category": "Gestão",
+            "keywords": ["Design Thinking", "Inovação", "UX"],
+            "active": true
+        }
+    ]
+}

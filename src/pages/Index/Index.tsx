@@ -2,16 +2,12 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MetricCard } from "@/components/MetricCard";
 import { MedalCard } from "@/components/MedalCard";
 import { Button } from "@/components/ui/button";
-import { Award, Linkedin, AlertTriangle, Plus, TrendingUp } from "lucide-react";
+import { Award, Linkedin, TrendingUp, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import emissionData from "@/mock/Emission.json";
+import type { Emission } from "@/models/Emission/Emission";
 
-const recentEmissions = [
-  { name: "Certificação em React Avançado", issuer: "Prof. Carlos Silva", date: "10/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Ana Beatriz" },
-  { name: "Liderança de Equipes", issuer: "Prof. Carlos Silva", date: "09/04/2026", category: "Liderança", linkedInStatus: "published" as const, receiver: "João Mendes" },
-  { name: "Comunicação Eficaz", issuer: "Prof. Carlos Silva", date: "08/04/2026", category: "Comunicação", linkedInStatus: "pending" as const, receiver: "Maria Costa" },
-  { name: "Gestão de Projetos Ágeis", issuer: "Prof. Carlos Silva", date: "07/04/2026", category: "Gestão", linkedInStatus: "error" as const, receiver: "Pedro Santos" },
-  { name: "Python para Data Science", issuer: "Prof. Carlos Silva", date: "06/04/2026", category: "Tecnologia", linkedInStatus: "published" as const, receiver: "Camila Rocha" },
-];
+const recentEmissions: Emission[] = emissionData.mockEmissions.slice(0, 5) as Emission[];
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -21,7 +17,6 @@ export default function DashboardPage() {
       <AppSidebar />
       <main className="ml-60 p-8">
         <div className="max-w-5xl mx-auto animate-fade-in">
-          {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
@@ -54,7 +49,6 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Recent emissions */}
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-medium text-foreground">Últimas emissões</h2>
@@ -63,11 +57,11 @@ export default function DashboardPage() {
               </Button>
             </div>
             <div className="space-y-2">
-              {recentEmissions.map((emission, idx) => (
+              {recentEmissions.map((emission) => (
                 <MedalCard
-                  key={idx}
-                  name={emission.name}
-                  issuer={`${emission.receiver}`}
+                  key={emission.id}
+                  name={emission.medalName}
+                  issuer={emission.receiverName}
                   date={emission.date}
                   category={emission.category}
                   linkedInStatus={emission.linkedInStatus}

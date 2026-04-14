@@ -1,0 +1,11 @@
+{
+    "mockUsers": [
+        {
+            "id": "1",
+            "name": "Prof. Diogo Santana",
+            "email": "diogo.santana@professor.cps.com.br",
+            "password": "senha123",
+            "role": "professor"
+        }
+    ]
+}

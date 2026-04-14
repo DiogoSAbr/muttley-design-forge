@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Award, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import userData from "@/mock/User.json";
+
+const defaultUser = userData.mockUsers[0];
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,13 +16,12 @@ export default function LoginPage() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      navigate("/");
+      navigate("/dashboard");
     }, 1200);
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left panel */}
       <div className="hidden lg:flex lg:flex-1 bg-primary-foreground items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-medal/10" />
         <div className="relative z-10 text-center px-12 max-w-md">
@@ -33,7 +35,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel - login form */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="lg:hidden flex items-center gap-2.5 mb-8">
@@ -56,7 +57,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="seu@email.com"
                 className="w-full h-10 px-3 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-shadow"
-                defaultValue="carlos.silva@universidade.edu.br"
+                defaultValue={defaultUser.email}
               />
             </div>
 
@@ -71,7 +72,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="w-full h-10 px-3 pr-10 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-shadow"
-                  defaultValue="senha123"
+                  defaultValue={defaultUser.password}
                 />
                 <button
                   type="button"
