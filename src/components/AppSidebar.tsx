@@ -17,7 +17,7 @@ const navItems = [
   { label: "Histórico", path: "/history", icon: History },
   { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
   { label: "Alunos", path: "/students", icon: Users },
-  { label: "Eventos", path: "/events", icon: Calendar }
+  { label: "Professores", path: "/teachers", icon: Calendar }
 ];
 
 export function AppSidebar() {
