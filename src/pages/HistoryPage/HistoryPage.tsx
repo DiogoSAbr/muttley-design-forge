@@ -2,19 +2,12 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MedalCard } from "@/components/MedalCard";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal, ArrowUpDown, Award } from "lucide-react";
+import { Search, ArrowUpDown, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import type { Emission } from "@/models/Emission/Emission";
+import emissionData from "@/mock/Emission.json";
 
-const historyData = [
-  { name: "Certificação em React Avançado", receiver: "Ana Beatriz Ferreira", date: "10/04/2026 14:32", category: "Tecnologia", linkedInStatus: "published" as const },
-  { name: "Liderança de Equipes", receiver: "João Mendes Costa", date: "09/04/2026 11:15", category: "Liderança", linkedInStatus: "published" as const },
-  { name: "Comunicação Eficaz", receiver: "Maria Clara Oliveira", date: "08/04/2026 09:45", category: "Comunicação", linkedInStatus: "pending" as const },
-  { name: "Gestão de Projetos Ágeis", receiver: "Pedro Santos Lima", date: "07/04/2026 16:20", category: "Gestão", linkedInStatus: "error" as const },
-  { name: "Python para Data Science", receiver: "Camila Rocha Dias", date: "06/04/2026 10:00", category: "Tecnologia", linkedInStatus: "published" as const },
-  { name: "Design Thinking", receiver: "Lucas Oliveira", date: "05/04/2026 15:30", category: "Gestão", linkedInStatus: "published" as const },
-  { name: "Comunicação Eficaz", receiver: "Fernanda Alves", date: "04/04/2026 13:10", category: "Comunicação", linkedInStatus: "published" as const },
-  { name: "Liderança de Equipes", receiver: "Ricardo Souza", date: "03/04/2026 08:55", category: "Liderança", linkedInStatus: "pending" as const },
-];
+const historyData: Emission[] = emissionData.mockEmissions as Emission[];
 
 export default function HistoryPage() {
   const [search, setSearch] = useState("");
@@ -23,8 +16,8 @@ export default function HistoryPage() {
 
   const filtered = historyData.filter(
     (h) =>
-      h.receiver.toLowerCase().includes(search.toLowerCase()) ||
-      h.name.toLowerCase().includes(search.toLowerCase())
+      h.receiverName.toLowerCase().includes(search.toLowerCase()) ||
+      h.medalName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -42,7 +35,6 @@ export default function HistoryPage() {
             </Button>
           </div>
 
-          {/* Filters */}
           <div className="flex items-center gap-3 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -69,7 +61,6 @@ export default function HistoryPage() {
             </Button>
           </div>
 
-          {/* Results */}
           {filtered.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-4">
@@ -81,12 +72,12 @@ export default function HistoryPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {filtered.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2">
+              {filtered.map((item) => (
+                <div key={item.id} className="flex items-center gap-2">
                   <span className="text-[11px] text-muted-foreground w-32 flex-shrink-0 text-right">{item.date}</span>
                   <MedalCard
-                    name={item.name}
-                    issuer={item.receiver}
+                    name={item.medalName}
+                    issuer={item.receiverName}
                     date=""
                     category={item.category}
                     linkedInStatus={item.linkedInStatus}

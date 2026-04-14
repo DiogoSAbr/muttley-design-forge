@@ -1,0 +1,76 @@
+{
+    "mockEmissions": [
+        {
+            "id": "1",
+            "medalName": "Certificação em React Avançado",
+            "receiverName": "Ana Beatriz Oliveira",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "10/04/2026 14:32",
+            "category": "Tecnologia",
+            "linkedInStatus": "published"
+        },
+        {
+            "id": "2",
+            "medalName": "Liderança de Equipes",
+            "receiverName": "João Pedro Mendes",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "09/04/2026 11:15",
+            "category": "Liderança",
+            "linkedInStatus": "published"
+        },
+        {
+            "id": "3",
+            "medalName": "Comunicação Eficaz",
+            "receiverName": "Maria Clara Costa",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "08/04/2026 09:45",
+            "category": "Comunicação",
+            "linkedInStatus": "pending"
+        },
+        {
+            "id": "4",
+            "medalName": "Gestão de Projetos Ágeis",
+            "receiverName": "Pedro Henrique Santos",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "07/04/2026 16:20",
+            "category": "Gestão",
+            "linkedInStatus": "error"
+        },
+        {
+            "id": "5",
+            "medalName": "Python para Data Science",
+            "receiverName": "Camila Rocha Silva",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "06/04/2026 10:00",
+            "category": "Tecnologia",
+            "linkedInStatus": "published"
+        },
+        {
+            "id": "6",
+            "medalName": "Design Thinking",
+            "receiverName": "Lucas Oliveira",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "05/04/2026 15:30",
+            "category": "Gestão",
+            "linkedInStatus": "published"
+        },
+        {
+            "id": "7",
+            "medalName": "Comunicação Eficaz",
+            "receiverName": "Fernanda Alves",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "04/04/2026 13:10",
+            "category": "Comunicação",
+            "linkedInStatus": "published"
+        },
+        {
+            "id": "8",
+            "medalName": "Liderança de Equipes",
+            "receiverName": "Ricardo Souza",
+            "issuerName": "Prof. Diogo Santana",
+            "date": "03/04/2026 08:55",
+            "category": "Liderança",
+            "linkedInStatus": "pending"
+        }
+    ]
+}

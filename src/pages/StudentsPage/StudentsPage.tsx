@@ -23,23 +23,10 @@ import {
 import { UserAvatar } from "@/components/UserAvatar";
 import { Plus, Pencil, Trash2, Search, Upload, Linkedin, Github } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Student } from "@/models/Student/Student";
+import studentData from "@/mock/Student.json";
 
-interface Student {
-    id: string;
-    name: string;
-    ra: string;
-    email: string;
-    linkedin: string;
-    github: string;
-}
-
-const initialStudents: Student[] = [
-    { id: "1", name: "Ana Beatriz Oliveira", ra: "2024001", email: "ana.beatriz@email.com", linkedin: "https://linkedin.com/in/anabeatriz", github: "https://github.com/anabeatriz" },
-    { id: "2", name: "João Pedro Mendes", ra: "2024002", email: "joao.mendes@email.com", linkedin: "https://linkedin.com/in/joaomendes", github: "https://github.com/joaomendes" },
-    { id: "3", name: "Maria Clara Costa", ra: "2024003", email: "maria.costa@email.com", linkedin: "https://linkedin.com/in/mariacosta", github: "" },
-    { id: "4", name: "Pedro Henrique Santos", ra: "2024004", email: "pedro.santos@email.com", linkedin: "", github: "https://github.com/pedrosantos" },
-    { id: "5", name: "Camila Rocha Silva", ra: "2024005", email: "camila.rocha@email.com", linkedin: "https://linkedin.com/in/camilarocha", github: "https://github.com/camilarocha" },
-];
+const initialStudents: Student[] = studentData.mockStudents as Student[];
 
 const emptyStudent: Omit<Student, "id"> = { name: "", ra: "", email: "", linkedin: "", github: "" };
 
@@ -106,7 +93,6 @@ export default function StudentsPage() {
             toast({ title: "Formato inválido", description: "Por favor, envie um arquivo .xlsx", variant: "destructive" });
             return;
         }
-        // Mock import — in production would parse XLSX
         const mockImported: Student[] = [
             { id: crypto.randomUUID(), name: "Lucas Ferreira", ra: "2024010", email: "lucas.ferreira@email.com", linkedin: "", github: "" },
             { id: crypto.randomUUID(), name: "Juliana Almeida", ra: "2024011", email: "juliana.almeida@email.com", linkedin: "", github: "" },
@@ -144,7 +130,6 @@ export default function StudentsPage() {
                         <Input placeholder="Buscar por nome, RA ou e-mail..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
                     </div>
 
-                    {/* Table */}
                     <div className="bg-card rounded-lg border border-border overflow-hidden">
                         <table className="w-full text-sm">
                             <thead>
@@ -202,7 +187,6 @@ export default function StudentsPage() {
                 </div>
             </main>
 
-            {/* Create/Edit Dialog */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
@@ -239,7 +223,6 @@ export default function StudentsPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>

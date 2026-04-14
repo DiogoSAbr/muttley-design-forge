@@ -3,16 +3,16 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
-import EmitPage from "./pages/EmitPage.tsx";
-import HistoryPage from "./pages/HistoryPage.tsx";
-import ReceiverProfilePage from "./pages/ReceiverProfilePage.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import MedalsPage from "./pages/MedalsPage.tsx";
-import StudentsPage from "./pages/StudentsPage.tsx";
-import TeachersPage from "./pages/TeachersPage.tsx";
-import EventsPage from "./pages/EventsPage.tsx";
+import Index from "./pages/Index/Index.tsx";
+import LoginPage from "./pages/LoginPage/LoginPage.tsx";
+import EmitPage from "./pages/EmitPage/EmitPage.tsx";
+import HistoryPage from "./pages/HistoryPage/HistoryPage.tsx";
+import ReceiverProfilePage from "./pages/ReceiverProfilePage/ReceiverProfilePage.tsx";
+import NotFound from "./pages/NotFound/NotFound.tsx";
+import MedalsPage from "./pages/MedalsPage/MedalsPage.tsx";
+import StudentsPage from "./pages/StudentsPage/StudentsPage.tsx";
+import TeachersPage from "./pages/TeachersPage/TeachersPage.tsx";
+import EventsPage from "./pages/EventsPage/EventsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -23,8 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/dashboard" element={<Index />} />
           <Route path="/emit" element={<EmitPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/receivers/:id" element={<ReceiverProfilePage />} />

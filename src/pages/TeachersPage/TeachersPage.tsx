@@ -23,21 +23,10 @@ import {
 import { UserAvatar } from "@/components/UserAvatar";
 import { Plus, Pencil, Search, UserX, UserCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import type { Teacher } from "@/models/Teacher/Teacher";
+import teacherData from "@/mock/Teacher.json";
 
-interface Teacher {
-    id: string;
-    name: string;
-    email: string;
-    department: string;
-    active: boolean;
-}
-
-const initialTeachers: Teacher[] = [
-    { id: "1", name: "Prof. Diogo Santana", email: "diogo.santana@univ.edu", department: "Ciência da Computação", active: true },
-    { id: "2", name: "Prof. Carlos Silva", email: "carlos.silva@univ.edu", department: "Engenharia de Software", active: true },
-    { id: "3", name: "Profa. Fernanda Lima", email: "fernanda.lima@univ.edu", department: "Design", active: true },
-    { id: "4", name: "Prof. Ricardo Alves", email: "ricardo.alves@univ.edu", department: "Administração", active: false },
-];
+const initialTeachers: Teacher[] = teacherData.mockTeachers as Teacher[];
 
 const emptyTeacher: Omit<Teacher, "id" | "active"> = { name: "", email: "", department: "" };
 
@@ -171,7 +160,6 @@ export default function TeachersPage() {
                 </div>
             </main>
 
-            {/* Create/Edit Dialog */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
@@ -198,7 +186,6 @@ export default function TeachersPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Toggle Active Confirmation */}
             <AlertDialog open={toggleDialogOpen} onOpenChange={setToggleDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>

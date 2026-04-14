@@ -17,66 +17,19 @@ import {
 } from "@/components/ui/select";
 import { StatusBadge } from "@/components/StatusBadge";
 import {
-    Plus, Pencil, Trash2, Search, X, Check, CalendarDays, Clock, Users,
-    ArrowLeft, ArrowRight, CheckCircle2, Ban,
+    Plus, Pencil, Trash2, Search, X, Check, ArrowLeft, ArrowRight, CheckCircle2, Ban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import type { EventItem, Organizer, Participant, Competency } from "@/models/Event/Event";
+import studentData from "@/mock/Student.json";
+import teacherData from "@/mock/Teacher.json";
+import eventData from "@/mock/Event.json";
 
-// ── Types ──
-interface Organizer { name: string; type: "professor" | "aluno" | "outro" }
-interface Participant { name: string; type: "professor" | "aluno" | "outro" }
-interface Competency { name: string; target: "todos" | "participantes" | "organizadores" }
-
-interface EventItem {
-    id: string;
-    title: string;
-    modality: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    startTime: string;
-    endTime: string;
-    organizers: Organizer[];
-    participants: Participant[];
-    competencies: Competency[];
-    status: "agendado" | "cancelado" | "concluido";
-}
-
-// ── Mock data ──
-const mockTeachers = ["Prof. Diogo Santana", "Prof. Ana Mendes", "Prof. Carlos Lima", "Prof. Juliana Rocha"];
-const mockStudents = ["Ana Beatriz Oliveira", "João Pedro Mendes", "Maria Clara Costa", "Pedro Henrique Santos", "Camila Rocha Silva"];
-const mockCompetencies = ["React Avançado", "Liderança", "Comunicação", "Gestão Ágil", "Python", "Design Thinking", "Machine Learning", "UX Research"];
-
-const initialEvents: EventItem[] = [
-    {
-        id: "1", title: "Semana de Tecnologia 2025", modality: "Presencial",
-        description: "Palestras e workshops sobre tendências tecnológicas.",
-        startDate: "2025-03-10", endDate: "2025-03-14", startTime: "08:00", endTime: "18:00",
-        organizers: [{ name: "Prof. Diogo Santana", type: "professor" }, { name: "Ana Beatriz Oliveira", type: "aluno" }],
-        participants: [{ name: "João Pedro Mendes", type: "aluno" }, { name: "Maria Clara Costa", type: "aluno" }],
-        competencies: [{ name: "React Avançado", target: "todos" }],
-        status: "agendado",
-    },
-    {
-        id: "2", title: "Workshop de Liderança", modality: "Online",
-        description: "Desenvolvimento de soft skills para líderes.",
-        startDate: "2025-04-05", endDate: "", startTime: "14:00", endTime: "17:00",
-        organizers: [{ name: "Prof. Ana Mendes", type: "professor" }],
-        participants: [{ name: "Pedro Henrique Santos", type: "aluno" }, { name: "Camila Rocha Silva", type: "aluno" }],
-        competencies: [{ name: "Liderança", target: "participantes" }],
-        status: "agendado",
-    },
-    {
-        id: "3", title: "Hackathon de Inovação", modality: "Híbrido",
-        description: "Maratona de desenvolvimento com foco em soluções reais.",
-        startDate: "2025-02-20", endDate: "2025-02-22", startTime: "09:00", endTime: "21:00",
-        organizers: [{ name: "Prof. Carlos Lima", type: "professor" }],
-        participants: [{ name: "Ana Beatriz Oliveira", type: "aluno" }, { name: "João Pedro Mendes", type: "aluno" }],
-        competencies: [{ name: "Design Thinking", target: "todos" }, { name: "Gestão Ágil", target: "organizadores" }],
-        status: "concluido",
-    },
-];
+const mockTeachers = teacherData.mockTeachers.map((t) => t.name);
+const mockStudents = studentData.mockStudents.map((s) => s.name);
+const mockCompetencies: string[] = eventData.mockCompetencies;
+const initialEvents: EventItem[] = eventData.mockEvents as EventItem[];
 
 const STEPS = ["Informações", "Data e Horário", "Organizadores", "Participantes", "Competências", "Revisão"];
 
@@ -95,20 +48,17 @@ export default function EventsPage() {
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [cancelId, setCancelId] = useState<string | null>(null);
 
-    // Stepper state
     const [showStepper, setShowStepper] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [step, setStep] = useState(0);
     const [form, setForm] = useState({ ...emptyForm });
     const [showSuccess, setShowSuccess] = useState(false);
 
-    // Organizer / Participant add state
     const [orgType, setOrgType] = useState<string>("");
     const [orgName, setOrgName] = useState("");
     const [partType, setPartType] = useState<string>("");
     const [partName, setPartName] = useState("");
 
-    // Competency add state
     const [compName, setCompName] = useState("");
     const [compTarget, setCompTarget] = useState<string>("todos");
     const [newCompName, setNewCompName] = useState("");
@@ -231,7 +181,6 @@ export default function EventsPage() {
         concluido: { label: "Concluído", variant: "success" },
     };
 
-    // ── Stepper content ──
     if (showStepper) {
         if (showSuccess) {
             return (
@@ -487,7 +436,6 @@ export default function EventsPage() {
                                             </Button>
                                         </div>
                                     </div>
-                                    {/* Chips */}
                                     <div className="flex flex-wrap gap-2">
                                         {form.competencies.map((c, i) => (
                                             <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border bg-amber-50 text-amber-800 border-amber-200">

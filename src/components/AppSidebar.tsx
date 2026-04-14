@@ -13,7 +13,7 @@ import {
 import { UserAvatar } from "./UserAvatar";
 
 const navItems = [
-  { label: "Dashboard", path: "/", icon: LayoutDashboard },
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "Emitir medalha", path: "/emit", icon: Award },
   { label: "Histórico", path: "/history", icon: History },
   { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
@@ -68,7 +68,7 @@ export function AppSidebar() {
           <button
             className="text-sidebar-muted hover:text-sidebar-foreground transition-colors"
             title="Sair"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/")}
           >
             <LogOut className="w-4 h-4" />
           </button>

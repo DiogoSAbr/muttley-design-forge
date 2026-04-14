@@ -3,27 +3,28 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { EmissionStepper } from "@/components/EmissionStepper";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/UserAvatar";
-import { StatusBadge } from "@/components/StatusBadge";
 import {
-  Search, X, Check, Award, ArrowRight, ArrowLeft, Loader2, Shield, CheckCircle2,
+  Search, X, Check, Award, ArrowRight, ArrowLeft, Loader2, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import mockStudentsData from "../mock/Student.json";
-import mockMedalsData from "../mock/Medals.json";
+import type { Student } from "@/models/Student/Student";
+import type { Medal } from "@/models/Medal/Medal";
+import studentData from "@/mock/Student.json";
+import medalData from "@/mock/Medal.json";
 
 const STEPS = ["Buscar aluno", "Selecionar medalha", "Confirmar"];
 
-const mockStudents = mockStudentsData?.mockStudents;
-const mockMedals = mockMedalsData?.mockMedals;
+const mockStudents: Student[] = studentData.mockStudents as Student[];
+const mockMedals: Medal[] = medalData.mockMedals as Medal[];
 
 type EmissionPhase = "idle" | "registering" | "publishing" | "notifying" | "success" | "partial-error";
 
 export default function EmitPage() {
   const [step, setStep] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState<typeof mockStudents[0] | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [confirmedStudent, setConfirmedStudent] = useState(false);
-  const [selectedMedal, setSelectedMedal] = useState<typeof mockMedals[0] | null>(null);
+  const [selectedMedal, setSelectedMedal] = useState<Medal | null>(null);
   const [emissionPhase, setEmissionPhase] = useState<EmissionPhase>("idle");
 
   const filteredStudents = searchQuery.length > 1

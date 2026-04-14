@@ -19,35 +19,22 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Plus, Pencil, Search, Medal } from "lucide-react";
+import type { Medal as MedalModel } from "@/models/Medal/Medal";
+import medalData from "@/mock/Medal.json";
 
-interface MedalType {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    skills: string[];
-    active: boolean;
-}
-
-const initialMedals: MedalType[] = [
-    { id: "1", name: "Certificação em React Avançado", description: "Domínio avançado de React, hooks e patterns", category: "Tecnologia", skills: ["React", "TypeScript", "Hooks"], active: true },
-    { id: "2", name: "Liderança de Equipes", description: "Capacidade de liderar equipes multidisciplinares", category: "Liderança", skills: ["Gestão", "Comunicação", "Feedback"], active: true },
-    { id: "3", name: "Comunicação Eficaz", description: "Habilidade de comunicação oral e escrita profissional", category: "Comunicação", skills: ["Oratória", "Escrita", "Apresentação"], active: true },
-    { id: "4", name: "Gestão de Projetos Ágeis", description: "Metodologias ágeis aplicadas a projetos reais", category: "Gestão", skills: ["Scrum", "Kanban", "Sprint Planning"], active: true },
-    { id: "5", name: "Python para Data Science", description: "Análise de dados com Python e bibliotecas científicas", category: "Tecnologia", skills: ["Python", "Pandas", "Machine Learning"], active: false },
-];
+const initialMedals: MedalModel[] = medalData.mockMedals as MedalModel[];
 
 const categories = ["Tecnologia", "Liderança", "Comunicação", "Gestão", "Acadêmico"];
 
-const emptyMedal: Omit<MedalType, "id"> = { name: "", description: "", category: "", skills: [], active: true };
+const emptyMedal: Omit<MedalModel, "id"> = { name: "", description: "", category: "", keywords: [], active: true };
 
 export default function MedalsPage() {
-    const [medals, setMedals] = useState<MedalType[]>(initialMedals);
+    const [medals, setMedals] = useState<MedalModel[]>(initialMedals);
     const [search, setSearch] = useState("");
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [editingMedal, setEditingMedal] = useState<MedalType | null>(null);
+    const [editingMedal, setEditingMedal] = useState<MedalModel | null>(null);
     const [form, setForm] = useState(emptyMedal);
-    const [skillInput, setSkillInput] = useState("");
+    const [keywordInput, setKeywordInput] = useState("");
 
     const filtered = medals.filter(
         (m) =>
@@ -58,27 +45,27 @@ export default function MedalsPage() {
     function openCreate() {
         setEditingMedal(null);
         setForm(emptyMedal);
-        setSkillInput("");
+        setKeywordInput("");
         setDialogOpen(true);
     }
 
-    function openEdit(medal: MedalType) {
+    function openEdit(medal: MedalModel) {
         setEditingMedal(medal);
-        setForm({ name: medal.name, description: medal.description, category: medal.category, skills: medal.skills, active: medal.active });
-        setSkillInput("");
+        setForm({ name: medal.name, description: medal.description, category: medal.category, keywords: medal.keywords, active: medal.active });
+        setKeywordInput("");
         setDialogOpen(true);
     }
 
-    function addSkill() {
-        const trimmed = skillInput.trim();
-        if (trimmed && !form.skills.includes(trimmed)) {
-            setForm({ ...form, skills: [...form.skills, trimmed] });
-            setSkillInput("");
+    function addKeyword() {
+        const trimmed = keywordInput.trim();
+        if (trimmed && !form.keywords.includes(trimmed)) {
+            setForm({ ...form, keywords: [...form.keywords, trimmed] });
+            setKeywordInput("");
         }
     }
 
-    function removeSkill(skill: string) {
-        setForm({ ...form, skills: form.skills.filter((s) => s !== skill) });
+    function removeKeyword(keyword: string) {
+        setForm({ ...form, keywords: form.keywords.filter((k) => k !== keyword) });
     }
 
     function handleSave() {
@@ -143,8 +130,8 @@ export default function MedalsPage() {
                                     </div>
                                     <p className="text-xs text-muted-foreground truncate">{medal.description}</p>
                                     <div className="flex gap-1.5 mt-1.5">
-                                        {medal.skills.map((s) => (
-                                            <span key={s} className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded">{s}</span>
+                                        {medal.keywords.map((k) => (
+                                            <span key={k} className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded">{k}</span>
                                         ))}
                                     </div>
                                 </div>
@@ -190,18 +177,18 @@ export default function MedalsPage() {
                             <Label>Competências</Label>
                             <div className="flex gap-2">
                                 <Input
-                                    value={skillInput}
-                                    onChange={(e) => setSkillInput(e.target.value)}
+                                    value={keywordInput}
+                                    onChange={(e) => setKeywordInput(e.target.value)}
                                     placeholder="Adicionar competência..."
-                                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+                                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addKeyword())}
                                 />
-                                <Button type="button" variant="outline" size="sm" onClick={addSkill}>Adicionar</Button>
+                                <Button type="button" variant="outline" size="sm" onClick={addKeyword}>Adicionar</Button>
                             </div>
-                            {form.skills.length > 0 && (
+                            {form.keywords.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-2">
-                                    {form.skills.map((s) => (
-                                        <span key={s} className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded-full cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors" onClick={() => removeSkill(s)}>
-                                            {s} ×
+                                    {form.keywords.map((k) => (
+                                        <span key={k} className="text-xs bg-accent text-accent-foreground px-2 py-1 rounded-full cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors" onClick={() => removeKeyword(k)}>
+                                            {k} ×
                                         </span>
                                     ))}
                                 </div>
