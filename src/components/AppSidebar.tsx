@@ -7,7 +7,7 @@ import {
   Users,
   Medal,
   LogOut,
-  Calendar,
+  GraduationCap,
 } from "lucide-react";
 import { UserAvatar } from "./UserAvatar";
 
@@ -17,7 +17,7 @@ const navItems = [
   { label: "Histórico", path: "/history", icon: History },
   { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
   { label: "Alunos", path: "/students", icon: Users },
-  { label: "Professores", path: "/teachers", icon: Calendar }
+  { label: "Professores", path: "/teachers", icon: GraduationCap }
 ];
 
 export function AppSidebar() {
