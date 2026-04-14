@@ -8,6 +8,9 @@ import LoginPage from "./pages/LoginPage.tsx";
 import EmitPage from "./pages/EmitPage.tsx";
 import HistoryPage from "./pages/HistoryPage.tsx";
 import ReceiverProfilePage from "./pages/ReceiverProfilePage.tsx";
+import MedalsPage from "./pages/MedalsPage.tsx";
+import StudentsPage from "./pages/StudentsPage.tsx";
+import TeachersPage from "./pages/TeachersPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/receivers/:id" element={<ReceiverProfilePage />} />
           <Route path="/receivers" element={<ReceiverProfilePage />} />
+          <Route path="/medals" element={<MedalsPage />} />
+          <Route path="/students" element={<StudentsPage />} />
+          <Route path="/teachers" element={<TeachersPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
