@@ -1,14 +1,4 @@
 {
-    "mockCompetencies": [
-        "React Avançado",
-        "Liderança",
-        "Comunicação",
-        "Gestão Ágil",
-        "Python",
-        "Design Thinking",
-        "Machine Learning",
-        "UX Research"
-    ],
     "mockEvents": [
         {
             "id": "1",
@@ -23,13 +13,7 @@
                 { "name": "Prof. Diogo Santana", "type": "professor" },
                 { "name": "Ana Beatriz Oliveira", "type": "aluno" }
             ],
-            "participants": [
-                { "name": "João Pedro Mendes", "type": "aluno" },
-                { "name": "Maria Clara Costa", "type": "aluno" }
-            ],
-            "competencies": [
-                { "name": "React Avançado", "target": "todos" }
-            ],
+            "medalIds": ["1"],
             "status": "agendado"
         },
         {
@@ -44,13 +28,7 @@
             "organizers": [
                 { "name": "Prof. Ana Mendes", "type": "professor" }
             ],
-            "participants": [
-                { "name": "Pedro Henrique Santos", "type": "aluno" },
-                { "name": "Camila Rocha Silva", "type": "aluno" }
-            ],
-            "competencies": [
-                { "name": "Liderança", "target": "participantes" }
-            ],
+            "medalIds": ["2"],
             "status": "agendado"
         },
         {
@@ -65,14 +43,7 @@
             "organizers": [
                 { "name": "Prof. Carlos Lima", "type": "professor" }
             ],
-            "participants": [
-                { "name": "Ana Beatriz Oliveira", "type": "aluno" },
-                { "name": "João Pedro Mendes", "type": "aluno" }
-            ],
-            "competencies": [
-                { "name": "Design Thinking", "target": "todos" },
-                { "name": "Gestão Ágil", "target": "organizadores" }
-            ],
+            "medalIds": ["4", "6"],
             "status": "concluido"
         }
     ]

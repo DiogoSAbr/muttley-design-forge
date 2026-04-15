@@ -12,7 +12,10 @@ import NotFound from "./pages/NotFound/NotFound.tsx";
 import MedalsPage from "./pages/MedalsPage/MedalsPage.tsx";
 import StudentsPage from "./pages/StudentsPage/StudentsPage.tsx";
 import TeachersPage from "./pages/TeachersPage/TeachersPage.tsx";
+import EventsLayout from "./pages/EventsPage/EventsLayout.tsx";
 import EventsPage from "./pages/EventsPage/EventsPage.tsx";
+import EventFormPage from "./pages/EventFormPage/EventFormPage.tsx";
+import EventDetailPage from "./pages/EventDetailPage/EventDetailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +35,12 @@ const App = () => (
           <Route path="/medals" element={<MedalsPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/teachers" element={<TeachersPage />} />
-          <Route path="/events" element={<EventsPage />} />
+          <Route element={<EventsLayout />}>
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/new" element={<EventFormPage />} />
+            <Route path="/events/:id/edit" element={<EventFormPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

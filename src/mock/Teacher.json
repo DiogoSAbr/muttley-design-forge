@@ -4,28 +4,28 @@
             "id": "1",
             "name": "Prof. Diogo Santana",
             "email": "diogo.santana@univ.edu",
-            "department": "Ciência da Computação",
+            "courseIds": ["1", "3"],
             "active": true
         },
         {
             "id": "2",
             "name": "Prof. Carlos Silva",
             "email": "carlos.silva@univ.edu",
-            "department": "Engenharia de Software",
+            "courseIds": ["1", "2"],
             "active": true
         },
         {
             "id": "3",
             "name": "Profa. Fernanda Lima",
             "email": "fernanda.lima@univ.edu",
-            "department": "Design",
+            "courseIds": ["2"],
             "active": true
         },
         {
             "id": "4",
             "name": "Prof. Ricardo Alves",
             "email": "ricardo.alves@univ.edu",
-            "department": "Administração",
+            "courseIds": ["3", "4"],
             "active": false
         }
     ]
