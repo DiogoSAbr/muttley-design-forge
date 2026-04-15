@@ -20,19 +20,30 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/UserAvatar";
-import { Plus, Pencil, Trash2, Search, Upload, Linkedin, Github } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Upload, Linkedin, Github, EllipsisVertical, X, SlidersHorizontal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Student } from "@/models/Student/Student";
+import type { Course } from "@/models/Course/Course";
 import studentData from "@/mock/Student.json";
+import courseData from "@/mock/Course/Course.json";
 
 const initialStudents: Student[] = studentData.mockStudents as Student[];
+const courses: Course[] = courseData.mockCourses as Course[];
 
-const emptyStudent: Omit<Student, "id"> = { name: "", ra: "", email: "", linkedin: "", github: "" };
+const emptyStudent: Omit<Student, "id"> = { name: "", ra: "", email: "", linkedin: "", github: "", curso: "" };
 
 export default function StudentsPage() {
     const [students, setStudents] = useState<Student[]>(initialStudents);
     const [search, setSearch] = useState("");
+    const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+    const [filterOpen, setFilterOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -41,12 +52,28 @@ export default function StudentsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
 
+    const hasFilters = search !== "" || selectedCourses.length > 0;
+
     const filtered = students.filter(
         (s) =>
-            s.name.toLowerCase().includes(search.toLowerCase()) ||
-            s.ra.includes(search) ||
-            s.email.toLowerCase().includes(search.toLowerCase())
+            (s.name.toLowerCase().includes(search.toLowerCase()) ||
+                s.ra.includes(search) ||
+                s.email.toLowerCase().includes(search.toLowerCase())) &&
+            (selectedCourses.length === 0 || selectedCourses.includes(s.curso))
     );
+
+    function toggleCourse(abbreviation: string) {
+        setSelectedCourses((prev) =>
+            prev.includes(abbreviation)
+                ? prev.filter((c) => c !== abbreviation)
+                : [...prev, abbreviation]
+        );
+    }
+
+    function clearFilters() {
+        setSearch("");
+        setSelectedCourses([]);
+    }
 
     function openCreate() {
         setEditingStudent(null);
@@ -56,7 +83,7 @@ export default function StudentsPage() {
 
     function openEdit(student: Student) {
         setEditingStudent(student);
-        setForm({ name: student.name, ra: student.ra, email: student.email, linkedin: student.linkedin, github: student.github });
+        setForm({ name: student.name, ra: student.ra, email: student.email, linkedin: student.linkedin, github: student.github, curso: student.curso });
         setDialogOpen(true);
     }
 
@@ -94,8 +121,8 @@ export default function StudentsPage() {
             return;
         }
         const mockImported: Student[] = [
-            { id: crypto.randomUUID(), name: "Lucas Ferreira", ra: "2024010", email: "lucas.ferreira@email.com", linkedin: "", github: "" },
-            { id: crypto.randomUUID(), name: "Juliana Almeida", ra: "2024011", email: "juliana.almeida@email.com", linkedin: "", github: "" },
+            { id: crypto.randomUUID(), name: "Lucas Ferreira", ra: "2024010", email: "lucas.ferreira@email.com", linkedin: "", github: "", curso: "ADS" },
+            { id: crypto.randomUUID(), name: "Juliana Almeida", ra: "2024011", email: "juliana.almeida@email.com", linkedin: "", github: "", curso: "ADS" },
         ];
         setStudents((prev) => [...prev, ...mockImported]);
         toast({ title: "Importação concluída", description: `${mockImported.length} alunos importados com sucesso.` });
@@ -125,10 +152,51 @@ export default function StudentsPage() {
                         </div>
                     </div>
 
-                    <div className="relative mb-6">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input placeholder="Buscar por nome, RA ou e-mail..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                    <div className="flex gap-2 mb-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input placeholder="Buscar por nome, RA ou e-mail..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                        </div>
+                        <Button
+                            variant={filterOpen || selectedCourses.length > 0 ? "default" : "outline"}
+                            size="icon"
+                            onClick={() => setFilterOpen((prev) => !prev)}
+                            className="relative shrink-0"
+                        >
+                            <SlidersHorizontal className="w-4 h-4" />
+                            {selectedCourses.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-primary-foreground rounded-full" />
+                            )}
+                        </Button>
                     </div>
+
+                    {filterOpen && (
+                        <div className="bg-card border border-border rounded-lg px-4 py-3 mb-6">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Filtrar por curso</span>
+                                {hasFilters && (
+                                    <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground">
+                                        <X className="w-3 h-3 mr-1" />
+                                        Limpar filtros
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {courses.map((course) => (
+                                    <Button
+                                        key={course.id}
+                                        variant={selectedCourses.includes(course.abbreviation) ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => toggleCourse(course.abbreviation)}
+                                        className="h-7 px-3 text-xs"
+                                    >
+                                        {course.abbreviation}
+                                        <span className="ml-1.5 opacity-70">— {course.name}</span>
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="bg-card rounded-lg border border-border overflow-hidden">
                         <table className="w-full text-sm">
@@ -137,8 +205,8 @@ export default function StudentsPage() {
                                     <th className="text-left px-4 py-3 font-medium text-muted-foreground">Aluno</th>
                                     <th className="text-left px-4 py-3 font-medium text-muted-foreground">RA</th>
                                     <th className="text-left px-4 py-3 font-medium text-muted-foreground">E-mail</th>
-                                    <th className="text-center px-4 py-3 font-medium text-muted-foreground">Links</th>
-                                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">Ações</th>
+                                    <th className="text-center px-4 py-3 font-medium text-muted-foreground">Curso</th>
+                                    <th className="text-center px-4 py-3 font-medium text-muted-foreground">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -152,29 +220,28 @@ export default function StudentsPage() {
                                         </td>
                                         <td className="px-4 py-3 text-muted-foreground">{student.ra}</td>
                                         <td className="px-4 py-3 text-muted-foreground">{student.email}</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex justify-center gap-2">
-                                                {student.linkedin && (
-                                                    <a href={student.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#0A66C2] hover:opacity-80">
-                                                        <Linkedin className="w-4 h-4" />
-                                                    </a>
-                                                )}
-                                                {student.github && (
-                                                    <a href={student.github} target="_blank" rel="noopener noreferrer" className="text-foreground hover:opacity-80">
-                                                        <Github className="w-4 h-4" />
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex justify-end gap-1">
-                                                <Button variant="ghost" size="sm" onClick={() => openEdit(student)}>
-                                                    <Pencil className="w-4 h-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => confirmDelete(student)}>
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </div>
+                                        <td className="px-4 py-3 text-muted-foreground text-center">{student.curso}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 mx-auto">
+                                                        <EllipsisVertical size={16} />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => openEdit(student)}>
+                                                        <Pencil className="w-4 h-4 mr-2" />
+                                                        Editar
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => confirmDelete(student)}
+                                                        className="text-destructive focus:text-destructive"
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-2" />
+                                                        Excluir
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </td>
                                     </tr>
                                 ))}
@@ -193,9 +260,15 @@ export default function StudentsPage() {
                         <DialogTitle>{editingStudent ? "Editar aluno" : "Novo aluno"}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
-                        <div>
-                            <Label>Nome completo</Label>
-                            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nome do aluno" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label>Nome completo</Label>
+                                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nome do aluno" />
+                            </div>
+                            <div>
+                                <Label>Curso</Label>
+                                <Input value={form.curso} onChange={(e) => setForm({ ...form, curso: e.target.value })} placeholder="Curso do aluno" />
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
