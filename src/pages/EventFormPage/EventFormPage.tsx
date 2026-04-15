@@ -31,7 +31,7 @@ import type { Course } from "@/models/Course/Course";
 import studentData from "@/mock/Student.json";
 import teacherData from "@/mock/Teacher.json";
 import medalData from "@/mock/Medal.json";
-import courseData from "@/mock/Course/Course.json";
+import courseData from "@/mock/Course.json";
 import { useEvents } from "@/pages/EventsPage/EventsContext";
 
 interface Student {

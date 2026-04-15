@@ -8,9 +8,10 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { StatusBadge } from "@/components/StatusBadge";
-import { Plus, Pencil, Trash2, Search, Ban } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Ban, Eye, EllipsisVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useEvents } from "./EventsContext";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const statusMap: Record<string, { label: string; variant: "success" | "error" | "warning" }> = {
     agendado: { label: "Agendado", variant: "warning" },
@@ -76,7 +77,7 @@ export default function EventsPage() {
                                     <th className="text-left p-3 font-medium text-muted-foreground">Modalidade</th>
                                     <th className="text-left p-3 font-medium text-muted-foreground">Data</th>
                                     <th className="text-left p-3 font-medium text-muted-foreground">Status</th>
-                                    <th className="text-right p-3 font-medium text-muted-foreground">Ações</th>
+                                    <th className="text-center p-3 font-medium text-muted-foreground">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,20 +91,35 @@ export default function EventsPage() {
                                         <td className="p-3">
                                             <StatusBadge variant={statusMap[ev.status].variant}>{statusMap[ev.status].label}</StatusBadge>
                                         </td>
-                                        <td className="p-3 text-right">
-                                            <div className="flex items-center justify-end gap-1">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/events/${ev.id}/edit`)} title="Editar">
-                                                    <Pencil className="w-4 h-4" />
-                                                </Button>
-                                                {ev.status === "agendado" && (
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-orange-600 hover:text-orange-700" onClick={() => setCancelId(ev.id)} title="Cancelar">
-                                                        <Ban className="w-4 h-4" />
+                                        <td className="px-4 py-3 text-center">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 mx-auto">
+                                                        <EllipsisVertical size={16} />
                                                     </Button>
-                                                )}
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => setDeleteId(ev.id)} title="Excluir">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
-                                            </div>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem
+                                                        onClick={() => navigate(`/events/${ev.id}`)}
+                                                    >
+                                                        <Eye className="w-4 h-4 mr-2" />
+                                                        Ver Detalhes
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => navigate(`/events/${ev.id}/edit`)}
+                                                    >
+                                                        <Pencil className="w-4 h-4 mr-2" />
+                                                        Editar
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => setDeleteId(ev.id)}
+                                                        className="text-destructive focus:text-destructive"
+                                                    >
+                                                        <Trash2 className="w-4 h-4 mr-2" />
+                                                        Excluir
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </td>
                                     </tr>
                                 ))}

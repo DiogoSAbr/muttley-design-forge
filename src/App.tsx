@@ -15,6 +15,7 @@ import TeachersPage from "./pages/TeachersPage/TeachersPage.tsx";
 import EventsLayout from "./pages/EventsPage/EventsLayout.tsx";
 import EventsPage from "./pages/EventsPage/EventsPage.tsx";
 import EventFormPage from "./pages/EventFormPage/EventFormPage.tsx";
+import EventDetailPage from "./pages/EventDetailPage/EventDetailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/new" element={<EventFormPage />} />
             <Route path="/events/:id/edit" element={<EventFormPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

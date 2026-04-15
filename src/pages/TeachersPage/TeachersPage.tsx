@@ -33,7 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Teacher } from "@/models/Teacher/Teacher";
 import type { Course } from "@/models/Course/Course";
 import teacherData from "@/mock/Teacher.json";
-import courseData from "@/mock/Course/Course.json";
+import courseData from "@/mock/Course.json";
 
 const initialTeachers: Teacher[] = teacherData.mockTeachers as Teacher[];
 const allCourses: Course[] = courseData.mockCourses as Course[];
