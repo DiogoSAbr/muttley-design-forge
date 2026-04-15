@@ -3,16 +3,6 @@ export interface Organizer {
     type: "professor" | "aluno" | "outro";
 }
 
-export interface Participant {
-    name: string;
-    type: "professor" | "aluno" | "outro";
-}
-
-export interface Competency {
-    name: string;
-    target: "todos" | "participantes" | "organizadores";
-}
-
 export interface EventItem {
     id: string;
     title: string;
@@ -23,7 +13,6 @@ export interface EventItem {
     startTime: string;
     endTime: string;
     organizers: Organizer[];
-    participants: Participant[];
-    competencies: Competency[];
+    medalIds: string[];
     status: "agendado" | "cancelado" | "concluido";
 }
