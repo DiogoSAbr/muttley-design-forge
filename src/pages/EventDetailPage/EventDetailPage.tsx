@@ -57,16 +57,13 @@ export default function EventDetailPage() {
 
     const event = id ? events.find(e => e.id === id) : null;
 
-    // Organizadores tab state
     const [orgSearch, setOrgSearch] = useState("");
     const [orgSort, setOrgSort] = useState<"asc" | "desc">("asc");
     const [orgSortOpen, setOrgSortOpen] = useState(false);
 
-    // Medalhas tab state
     const [medalCatFilter, setMedalCatFilter] = useState("all");
     const [medalFilterOpen, setMedalFilterOpen] = useState(false);
 
-    // Attendance tab state
     const [attendSort, setAttendSort] = useState<"asc" | "desc">("asc");
     const [attendSortOpen, setAttendSortOpen] = useState(false);
 

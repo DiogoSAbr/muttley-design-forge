@@ -91,7 +91,6 @@ export default function EventFormPage() {
             : { ...emptyForm }
     );
 
-    // --- Organizers dialog state ---
     const [orgDialogOpen, setOrgDialogOpen] = useState(false);
     const [orgTab, setOrgTab] = useState("professor");
     const [orgSearch, setOrgSearch] = useState("");
@@ -104,7 +103,6 @@ export default function EventFormPage() {
     const [dialogOthers, setDialogOthers] = useState<string[]>([]);
     const [orgOtherInput, setOrgOtherInput] = useState("");
 
-    // --- Medals step state ---
     const [medals, setMedals] = useState<Medal[]>(initialMedals);
     const [medalSearch, setMedalSearch] = useState("");
     const [medalCatFilter, setMedalCatFilter] = useState("all");
@@ -133,7 +131,6 @@ export default function EventFormPage() {
         toast({ title: editingEvent ? "Evento atualizado" : "Evento criado com sucesso" });
     };
 
-    // --- Org dialog helpers ---
     function openOrgDialog() {
         setSelTeacherIds(
             allTeachers.filter(t => form.organizers.some(o => o.name === t.name && o.type === "professor")).map(t => t.id)
@@ -204,7 +201,6 @@ export default function EventFormPage() {
             orgSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
     }, [orgCourseFilter, orgSearch, orgSort]);
 
-    // --- Medal helpers ---
     const medalCategories = useMemo(() => [...new Set(medals.map(m => m.category))], [medals]);
 
     const filteredMedals = useMemo(() => {
@@ -240,7 +236,6 @@ export default function EventFormPage() {
         toast({ title: "Medalha criada", description: `${created.name} foi criada e selecionada.` });
     }
 
-    // --- Filter/Sort Popover shared between professor and aluno tabs ---
     const FilterSortControls = () => (
         <>
             <Popover open={orgFilterOpen} onOpenChange={setOrgFilterOpen}>
@@ -287,7 +282,6 @@ export default function EventFormPage() {
         </>
     );
 
-    // --- Success screen ---
     if (showSuccess) {
         return (
             <div className="min-h-screen bg-background">
@@ -323,7 +317,6 @@ export default function EventFormPage() {
             <AppSidebar />
             <main className="ml-60 p-8">
                 <div className="max-w-2xl mx-auto animate-fade-in">
-                    {/* Header */}
                     <div className="flex items-center gap-3 mb-6">
                         <Button variant="ghost" size="sm" onClick={() => navigate("/events")}>
                             <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
@@ -333,7 +326,6 @@ export default function EventFormPage() {
                         </h1>
                     </div>
 
-                    {/* Steps indicator */}
                     <div className="flex items-center gap-1 mb-8">
                         {STEPS.map((s, i) => (
                             <div key={s} className="flex-1 flex flex-col items-center gap-1.5">
@@ -352,10 +344,8 @@ export default function EventFormPage() {
                         ))}
                     </div>
 
-                    {/* Step content */}
                     <div className="bg-card border border-border rounded-xl p-6 mb-6">
 
-                        {/* Step 0: Informações */}
                         {step === 0 && (
                             <div className="space-y-4">
                                 <div>
@@ -382,7 +372,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 1: Data e Horário */}
                         {step === 1 && (
                             <div className="space-y-4">
                                 <div>
@@ -416,7 +405,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 2: Organizadores */}
                         {step === 2 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -441,7 +429,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 3: Medalhas */}
                         {step === 3 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -451,7 +438,6 @@ export default function EventFormPage() {
                                     </Button>
                                 </div>
 
-                                {/* New medal inline form */}
                                 {showNewMedal && (
                                     <div className="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
                                         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Nova medalha</p>
@@ -483,7 +469,6 @@ export default function EventFormPage() {
                                     </div>
                                 )}
 
-                                {/* Search + category filter */}
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -514,7 +499,6 @@ export default function EventFormPage() {
                                     </Popover>
                                 </div>
 
-                                {/* Medal grid */}
                                 <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
                                     {filteredMedals.map(medal => {
                                         const selected = form.medalIds.includes(medal.id);
@@ -549,7 +533,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 4: Revisão */}
                         {step === 4 && (
                             <div className="space-y-5">
                                 <h3 className="text-sm font-medium text-foreground">Revisão do evento</h3>
@@ -610,7 +593,6 @@ export default function EventFormPage() {
                         )}
                     </div>
 
-                    {/* Navigation */}
                     <div className="flex justify-between">
                         {step > 0 ? (
                             <Button variant="outline" onClick={() => setStep(s => s - 1)}>
@@ -630,7 +612,6 @@ export default function EventFormPage() {
                 </div>
             </main>
 
-            {/* Organizers Dialog */}
             <Dialog open={orgDialogOpen} onOpenChange={setOrgDialogOpen}>
                 <DialogContent className="sm:max-w-2xl flex flex-col max-h-[80vh]">
                     <DialogHeader>
@@ -644,7 +625,6 @@ export default function EventFormPage() {
                             <TabsTrigger value="outro" className="flex-1">Outros</TabsTrigger>
                         </TabsList>
 
-                        {/* Professors */}
                         <TabsContent value="professor" className="flex flex-col gap-3 mt-3 flex-1 min-h-0">
                             <div className="flex gap-2">
                                 <div className="relative flex-1">
@@ -677,7 +657,6 @@ export default function EventFormPage() {
                             )}
                         </TabsContent>
 
-                        {/* Students */}
                         <TabsContent value="aluno" className="flex flex-col gap-3 mt-3 flex-1 min-h-0">
                             <div className="flex gap-2">
                                 <div className="relative flex-1">
@@ -706,7 +685,6 @@ export default function EventFormPage() {
                             )}
                         </TabsContent>
 
-                        {/* Others */}
                         <TabsContent value="outro" className="flex flex-col gap-3 mt-3 flex-1 min-h-0">
                             <div className="flex gap-2">
                                 <Input placeholder="Nome do organizador externo"
