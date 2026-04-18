@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Award, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import userData from "@/mock/User.json";
 
 const defaultUser = userData.mockUsers[0];
@@ -9,14 +10,48 @@ const defaultUser = userData.mockUsers[0];
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    const email = emailRef.current?.value ?? "";
+    const password = passwordRef.current?.value ?? "";
+
+    const found = userData.mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (!found) {
+      setError("E-mail ou senha inválidos.");
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
+      const u = found as typeof found & {
+        mustChangePassword?: boolean;
+        studentId?: string;
+        github?: string;
+        linkedin?: string;
+      };
+      login({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role as "professor" | "aluno",
+        mustChangePassword: u.mustChangePassword ?? false,
+        studentId: u.studentId,
+        github: u.github,
+        linkedin: u.linkedin,
+      });
       setLoading(false);
-      navigate("/dashboard");
+      navigate(u.role === "aluno" ? "/student/dashboard" : "/dashboard");
     }, 1200);
   };
 
@@ -53,6 +88,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium text-foreground">E-mail</label>
               <input
+                ref={emailRef}
                 id="email"
                 type="email"
                 placeholder="seu@email.com"
@@ -68,6 +104,7 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <input
+                  ref={passwordRef}
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
@@ -83,6 +120,10 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
 
             <Button type="submit" className="w-full bg-primary" size="lg" loading={loading}>
               Entrar

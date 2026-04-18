@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/popover";
 import {
     ArrowLeft, Search, ArrowUpDown, Check, Calendar, Clock,
-    SlidersHorizontal, ExternalLink,
+    SlidersHorizontal, ExternalLink, MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Medal } from "@/models/Medal/Medal";
+import type { MedalAudience } from "@/models/Event/Event";
 import medalData from "@/mock/Medal.json";
 import attendanceData from "@/mock/Attendance.json";
 import { useEvents } from "@/pages/EventsPage/EventsContext";
@@ -48,6 +49,18 @@ const typeLabel = (type: string) => {
     return "Outro";
 };
 
+const audienceLabel: Record<MedalAudience, string> = {
+    palestrante: "Palestrante",
+    organizador: "Organizador",
+    ouvintes: "Ouvintes",
+};
+
+const audienceColor: Record<MedalAudience, string> = {
+    palestrante: "bg-violet-100 text-violet-700 border-violet-200",
+    organizador: "bg-blue-100 text-blue-700 border-blue-200",
+    ouvintes: "bg-emerald-100 text-emerald-700 border-emerald-200",
+};
+
 const formatDate = (d: string) => d ? new Date(d + "T00:00:00").toLocaleDateString("pt-BR") : "";
 
 export default function EventDetailPage() {
@@ -57,16 +70,17 @@ export default function EventDetailPage() {
 
     const event = id ? events.find(e => e.id === id) : null;
 
-    // Organizadores tab state
     const [orgSearch, setOrgSearch] = useState("");
     const [orgSort, setOrgSort] = useState<"asc" | "desc">("asc");
     const [orgSortOpen, setOrgSortOpen] = useState(false);
 
-    // Medalhas tab state
+    const [spkSearch, setSpkSearch] = useState("");
+    const [spkSort, setSpkSort] = useState<"asc" | "desc">("asc");
+    const [spkSortOpen, setSpkSortOpen] = useState(false);
+
     const [medalCatFilter, setMedalCatFilter] = useState("all");
     const [medalFilterOpen, setMedalFilterOpen] = useState(false);
 
-    // Attendance tab state
     const [attendSort, setAttendSort] = useState<"asc" | "desc">("asc");
     const [attendSortOpen, setAttendSortOpen] = useState(false);
 
@@ -89,6 +103,14 @@ export default function EventDetailPage() {
         return list.sort((a, b) =>
             orgSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
     }, [event, orgSearch, orgSort]);
+
+    const filteredSpeakers = useMemo(() => {
+        if (!event) return [];
+        let list = [...(event.speakers ?? [])];
+        if (spkSearch) list = list.filter(s => s.name.toLowerCase().includes(spkSearch.toLowerCase()));
+        return list.sort((a, b) =>
+            spkSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+    }, [event, spkSearch, spkSort]);
 
     const attendanceList = useMemo(() => {
         if (!id) return [];
@@ -122,6 +144,39 @@ export default function EventDetailPage() {
     const showAttendance = event.status !== "cancelado";
     const isScheduled = event.status === "agendado";
     const isConcluded = event.status === "concluido";
+    const hasSpeakers = (event.speakers?.length ?? 0) > 0;
+
+    const SortPopover = ({
+        open, onOpenChange, value, onChange,
+    }: {
+        open: boolean;
+        onOpenChange: (v: boolean) => void;
+        value: "asc" | "desc";
+        onChange: (v: "asc" | "desc") => void;
+    }) => (
+        <Popover open={open} onOpenChange={onOpenChange}>
+            <PopoverTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <ArrowUpDown className="w-4 h-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-44 p-2">
+                <p className="text-xs font-medium text-muted-foreground px-2 pb-2">Ordenar</p>
+                <button
+                    className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", value === "asc" && "bg-muted font-medium")}
+                    onClick={() => { onChange("asc"); onOpenChange(false); }}>
+                    {value === "asc" && <Check className="w-3 h-3" />}
+                    <span className={value !== "asc" ? "pl-5" : ""}>A → Z</span>
+                </button>
+                <button
+                    className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", value === "desc" && "bg-muted font-medium")}
+                    onClick={() => { onChange("desc"); onOpenChange(false); }}>
+                    {value === "desc" && <Check className="w-3 h-3" />}
+                    <span className={value !== "desc" ? "pl-5" : ""}>Z → A</span>
+                </button>
+            </PopoverContent>
+        </Popover>
+    );
 
     return (
         <div className="min-h-screen bg-background">
@@ -164,14 +219,27 @@ export default function EventDetailPage() {
                                     <span>{event.startTime || "—"} — {event.endTime || "—"}</span>
                                 </div>
                             )}
+                            {event.location && (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <MapPin className="w-4 h-4 shrink-0" />
+                                    <span>{event.location}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Card 2 — Tabs */}
                     <div className="bg-card border border-border rounded-xl overflow-hidden">
-                        <Tabs defaultValue="organizadores">
+                        <Tabs defaultValue={hasSpeakers ? "palestrantes" : "organizadores"}>
                             <div className="border-b border-border px-6 pt-4">
                                 <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-0">
+                                    {hasSpeakers && (
+                                        <TabsTrigger
+                                            value="palestrantes"
+                                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
+                                            Palestrantes
+                                        </TabsTrigger>
+                                    )}
                                     <TabsTrigger
                                         value="organizadores"
                                         className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
@@ -192,6 +260,36 @@ export default function EventDetailPage() {
                                 </TabsList>
                             </div>
 
+                            {/* Palestrantes */}
+                            {hasSpeakers && (
+                                <TabsContent value="palestrantes" className="p-6 space-y-4 mt-0">
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                            <Input placeholder="Buscar palestrante..." value={spkSearch}
+                                                onChange={e => setSpkSearch(e.target.value)} className="pl-9" />
+                                        </div>
+                                        <SortPopover
+                                            open={spkSortOpen} onOpenChange={setSpkSortOpen}
+                                            value={spkSort} onChange={setSpkSort}
+                                        />
+                                    </div>
+                                    <div className="space-y-1">
+                                        {filteredSpeakers.map((spk, i) => (
+                                            <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-muted/40 transition-colors">
+                                                <span className="text-sm font-medium text-foreground">{spk.name}</span>
+                                                <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full border", chipColor(spk.type))}>
+                                                    {typeLabel(spk.type)}
+                                                </span>
+                                            </div>
+                                        ))}
+                                        {filteredSpeakers.length === 0 && (
+                                            <p className="text-sm text-muted-foreground text-center py-8">Nenhum palestrante encontrado.</p>
+                                        )}
+                                    </div>
+                                </TabsContent>
+                            )}
+
                             {/* Organizadores */}
                             <TabsContent value="organizadores" className="p-6 space-y-4 mt-0">
                                 <div className="flex gap-2">
@@ -200,30 +298,11 @@ export default function EventDetailPage() {
                                         <Input placeholder="Buscar organizador..." value={orgSearch}
                                             onChange={e => setOrgSearch(e.target.value)} className="pl-9" />
                                     </div>
-                                    <Popover open={orgSortOpen} onOpenChange={setOrgSortOpen}>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline" size="icon">
-                                                <ArrowUpDown className="w-4 h-4" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent align="end" className="w-44 p-2">
-                                            <p className="text-xs font-medium text-muted-foreground px-2 pb-2">Ordenar</p>
-                                            <button
-                                                className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", orgSort === "asc" && "bg-muted font-medium")}
-                                                onClick={() => { setOrgSort("asc"); setOrgSortOpen(false); }}>
-                                                {orgSort === "asc" && <Check className="w-3 h-3" />}
-                                                <span className={orgSort !== "asc" ? "pl-5" : ""}>A → Z</span>
-                                            </button>
-                                            <button
-                                                className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", orgSort === "desc" && "bg-muted font-medium")}
-                                                onClick={() => { setOrgSort("desc"); setOrgSortOpen(false); }}>
-                                                {orgSort === "desc" && <Check className="w-3 h-3" />}
-                                                <span className={orgSort !== "desc" ? "pl-5" : ""}>Z → A</span>
-                                            </button>
-                                        </PopoverContent>
-                                    </Popover>
+                                    <SortPopover
+                                        open={orgSortOpen} onOpenChange={setOrgSortOpen}
+                                        value={orgSort} onChange={setOrgSort}
+                                    />
                                 </div>
-
                                 <div className="space-y-1">
                                     {filteredOrganizers.map((org, i) => (
                                         <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-muted/40 transition-colors">
@@ -272,17 +351,30 @@ export default function EventDetailPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    {filteredMedals.map(medal => (
-                                        <div key={medal.id} className="flex items-start gap-3 px-3 py-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-foreground">{medal.name}</p>
-                                                {medal.description && (
-                                                    <p className="text-xs text-muted-foreground mt-0.5">{medal.description}</p>
-                                                )}
+                                    {filteredMedals.map(medal => {
+                                        const auds: MedalAudience[] = (event.medalAudiences?.[medal.id] as MedalAudience[] | undefined) ?? ["palestrante", "organizador", "ouvintes"];
+                                        return (
+                                            <div key={medal.id} className="flex items-start gap-3 px-3 py-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-foreground">{medal.name}</p>
+                                                    {medal.description && (
+                                                        <p className="text-xs text-muted-foreground mt-0.5">{medal.description}</p>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                                                    <Badge variant="secondary" className="text-xs">{medal.category}</Badge>
+                                                    {auds.map(a => (
+                                                        <span key={a} className={cn(
+                                                            "text-[10px] font-medium px-2 py-0.5 rounded-full border",
+                                                            audienceColor[a]
+                                                        )}>
+                                                            {audienceLabel[a]}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <Badge variant="secondary" className="text-xs shrink-0">{medal.category}</Badge>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                     {filteredMedals.length === 0 && (
                                         <p className="text-sm text-muted-foreground text-center py-8">Nenhuma medalha encontrada.</p>
                                     )}
@@ -309,28 +401,10 @@ export default function EventDetailPage() {
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <p className="text-sm text-muted-foreground">{sortedAttendance.length} presença(s) registrada(s)</p>
-                                                <Popover open={attendSortOpen} onOpenChange={setAttendSortOpen}>
-                                                    <PopoverTrigger asChild>
-                                                        <Button variant="outline" size="icon">
-                                                            <ArrowUpDown className="w-4 h-4" />
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent align="end" className="w-44 p-2">
-                                                        <p className="text-xs font-medium text-muted-foreground px-2 pb-2">Ordenar</p>
-                                                        <button
-                                                            className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", attendSort === "asc" && "bg-muted font-medium")}
-                                                            onClick={() => { setAttendSort("asc"); setAttendSortOpen(false); }}>
-                                                            {attendSort === "asc" && <Check className="w-3 h-3" />}
-                                                            <span className={attendSort !== "asc" ? "pl-5" : ""}>A → Z</span>
-                                                        </button>
-                                                        <button
-                                                            className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", attendSort === "desc" && "bg-muted font-medium")}
-                                                            onClick={() => { setAttendSort("desc"); setAttendSortOpen(false); }}>
-                                                            {attendSort === "desc" && <Check className="w-3 h-3" />}
-                                                            <span className={attendSort !== "desc" ? "pl-5" : ""}>Z → A</span>
-                                                        </button>
-                                                    </PopoverContent>
-                                                </Popover>
+                                                <SortPopover
+                                                    open={attendSortOpen} onOpenChange={setAttendSortOpen}
+                                                    value={attendSort} onChange={setAttendSort}
+                                                />
                                             </div>
 
                                             <div className="rounded-lg border border-border overflow-hidden">
