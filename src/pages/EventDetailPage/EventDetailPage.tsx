@@ -184,7 +184,6 @@ export default function EventDetailPage() {
             <main className="ml-60 p-8">
                 <div className="max-w-3xl mx-auto animate-fade-in space-y-6">
 
-                    {/* Page header */}
                     <div className="flex items-center justify-between">
                         <Button variant="ghost" size="sm" onClick={() => navigate("/events")}>
                             <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
@@ -194,7 +193,6 @@ export default function EventDetailPage() {
                         </span>
                     </div>
 
-                    {/* Card 1 — Event info */}
                     <div className="bg-card border border-border rounded-xl p-6 space-y-4">
                         <div className="flex items-start gap-3">
                             <Badge variant="secondary" className="shrink-0 mt-0.5">{event.modality}</Badge>
@@ -228,7 +226,6 @@ export default function EventDetailPage() {
                         </div>
                     </div>
 
-                    {/* Card 2 — Tabs */}
                     <div className="bg-card border border-border rounded-xl overflow-hidden">
                         <Tabs defaultValue={hasSpeakers ? "palestrantes" : "organizadores"}>
                             <div className="border-b border-border px-6 pt-4">
@@ -260,7 +257,6 @@ export default function EventDetailPage() {
                                 </TabsList>
                             </div>
 
-                            {/* Palestrantes */}
                             {hasSpeakers && (
                                 <TabsContent value="palestrantes" className="p-6 space-y-4 mt-0">
                                     <div className="flex gap-2">
@@ -290,7 +286,6 @@ export default function EventDetailPage() {
                                 </TabsContent>
                             )}
 
-                            {/* Organizadores */}
                             <TabsContent value="organizadores" className="p-6 space-y-4 mt-0">
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
@@ -318,7 +313,6 @@ export default function EventDetailPage() {
                                 </div>
                             </TabsContent>
 
-                            {/* Medalhas */}
                             <TabsContent value="medalhas" className="p-6 space-y-4 mt-0">
                                 <div className="flex items-center justify-between">
                                     <p className="text-sm text-muted-foreground">
@@ -381,7 +375,6 @@ export default function EventDetailPage() {
                                 </div>
                             </TabsContent>
 
-                            {/* Lista de presença */}
                             {showAttendance && (
                                 <TabsContent value="presenca" className="p-6 mt-0">
                                     {isScheduled && (

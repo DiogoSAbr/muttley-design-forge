@@ -34,7 +34,6 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LoginPage />} />
 
-            {/* Rotas do professor */}
             <Route path="/dashboard" element={<Index />} />
             <Route path="/emit" element={<EmitPage />} />
             <Route path="/history" element={<HistoryPage />} />
@@ -43,6 +42,7 @@ const App = () => (
             <Route path="/medals" element={<MedalsPage />} />
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/teachers" element={<TeachersPage />} />
+
             <Route element={<EventsLayout />}>
               <Route path="/events" element={<EventsPage />} />
               <Route path="/events/new" element={<EventFormPage />} />
@@ -50,7 +50,6 @@ const App = () => (
               <Route path="/events/:id" element={<EventDetailPage />} />
             </Route>
 
-            {/* Rotas do aluno */}
             <Route path="/student/dashboard" element={<StudentDashboardPage />} />
             <Route path="/student/events" element={<StudentEventsPage />} />
             <Route path="/student/medals" element={<StudentMedalsPage />} />

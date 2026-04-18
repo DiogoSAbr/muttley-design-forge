@@ -129,11 +129,6 @@ export default function LoginPage() {
               Entrar
             </Button>
           </form>
-
-          <p className="text-xs text-muted-foreground text-center mt-6">
-            Ainda não tem conta?{" "}
-            <button className="text-primary font-medium hover:underline">Solicitar acesso</button>
-          </p>
         </div>
       </div>
     </div>

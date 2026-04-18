@@ -69,7 +69,6 @@ export default function StudentProfilePage() {
             </p>
           </div>
 
-          {/* Informações do aluno */}
           <div className="bg-card border border-border rounded-xl p-6 mb-5">
             <div className="flex items-center gap-4 mb-5">
               <UserAvatar name={user?.name ?? "Aluno"} size="lg" />
@@ -100,7 +99,6 @@ export default function StudentProfilePage() {
             </div>
           </div>
 
-          {/* Links sociais */}
           <div className="bg-card border border-border rounded-xl p-6 mb-5">
             <h2 className="text-sm font-semibold text-foreground mb-4">Links sociais</h2>
             <form onSubmit={handleSaveLinks} className="space-y-4">
@@ -132,7 +130,6 @@ export default function StudentProfilePage() {
             </form>
           </div>
 
-          {/* Alterar senha */}
           <div className="bg-card border border-border rounded-xl p-6">
             <h2 className="text-sm font-semibold text-foreground mb-1 flex items-center gap-1.5">
               <Lock className="w-4 h-4" /> Alterar senha

@@ -114,7 +114,6 @@ export default function EventFormPage() {
             : { ...emptyForm }
     );
 
-    // ── Person dialog (shared for speakers and organizers) ──
     const [personDialogOpen, setPersonDialogOpen] = useState(false);
     const [personDialogMode, setPersonDialogMode] = useState<"speaker" | "organizer">("organizer");
     const [personTab, setPersonTab] = useState("professor");
@@ -128,13 +127,11 @@ export default function EventFormPage() {
     const [dialogPersonOthers, setDialogPersonOthers] = useState<string[]>([]);
     const [personOtherInput, setPersonOtherInput] = useState("");
 
-    // ── Medal state ──
     const [medals, setMedals] = useState<Medal[]>(initialMedals);
     const [medalSearch, setMedalSearch] = useState("");
     const [medalCatFilter, setMedalCatFilter] = useState("all");
     const [medalFilterOpen, setMedalFilterOpen] = useState(false);
 
-    // ── New medal dialog ──
     const [newMedalDialogOpen, setNewMedalDialogOpen] = useState(false);
     const [newMedalForm, setNewMedalForm] = useState({ name: "", description: "", category: "", keywords: [] as string[] });
     const [newMedalKeywordInput, setNewMedalKeywordInput] = useState("");
@@ -167,7 +164,6 @@ export default function EventFormPage() {
         toast({ title: editingEvent ? "Evento atualizado" : "Evento criado com sucesso" });
     };
 
-    // ── Person dialog helpers ──
     function openPersonDialog(mode: "speaker" | "organizer") {
         const currentList = mode === "speaker" ? form.speakers : form.organizers;
         setPersonDialogMode(mode);
@@ -245,7 +241,6 @@ export default function EventFormPage() {
             personSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
     }, [personCourseFilter, personSearch, personSort]);
 
-    // ── Medal helpers ──
     const medalCategories = useMemo(() => [...new Set(medals.map(m => m.category))], [medals]);
 
     const filteredMedals = useMemo(() => {
@@ -314,7 +309,6 @@ export default function EventFormPage() {
         toast({ title: "Medalha criada", description: `"${created.name}" foi criada e selecionada.` });
     }
 
-    // ── Shared filter/sort controls (inside person dialog) ──
     const PersonFilterSortControls = () => (
         <>
             <Popover open={personFilterOpen} onOpenChange={setPersonFilterOpen}>
@@ -405,7 +399,6 @@ export default function EventFormPage() {
                         </h1>
                     </div>
 
-                    {/* Steps */}
                     <div className="flex items-center gap-1 mb-8">
                         {STEPS.map((s, i) => (
                             <div key={s} className="flex-1 flex flex-col items-center gap-1.5">
@@ -426,7 +419,6 @@ export default function EventFormPage() {
 
                     <div className="bg-card border border-border rounded-xl p-6 mb-6">
 
-                        {/* Step 0 — Informações */}
                         {step === 0 && (
                             <div className="space-y-4">
                                 <div>
@@ -463,7 +455,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 1 — Data e Horário */}
                         {step === 1 && (
                             <div className="space-y-4">
                                 <div>
@@ -497,7 +488,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 2 — Palestrantes */}
                         {step === 2 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -522,7 +512,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 3 — Organizadores */}
                         {step === 3 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -547,7 +536,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 4 — Medalhas */}
                         {step === 4 && (
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -645,7 +633,6 @@ export default function EventFormPage() {
                             </div>
                         )}
 
-                        {/* Step 5 — Revisão */}
                         {step === 5 && (
                             <div className="space-y-5">
                                 <h3 className="text-sm font-medium text-foreground">Revisão do evento</h3>
@@ -745,7 +732,6 @@ export default function EventFormPage() {
                 </div>
             </main>
 
-            {/* ── Person dialog (speakers & organizers) ── */}
             <Dialog open={personDialogOpen} onOpenChange={setPersonDialogOpen}>
                 <DialogContent className="sm:max-w-2xl flex flex-col max-h-[80vh]">
                     <DialogHeader>
@@ -856,7 +842,6 @@ export default function EventFormPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* ── New medal dialog ── */}
             <Dialog open={newMedalDialogOpen} onOpenChange={setNewMedalDialogOpen}>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
