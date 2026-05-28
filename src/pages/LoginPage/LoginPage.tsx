@@ -3,56 +3,62 @@ import { Award, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import userData from "@/mock/User.json";
-
-const defaultUser = userData.mockUsers[0];
+import { AuthService } from "@/services/AuthService";
+import { ApiError, decodeJwtPayload } from "@/lib/api/client";
+import type { UserRole } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const emailRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const email = emailRef.current?.value ?? "";
+    const username = usernameRef.current?.value?.trim() ?? "";
     const password = passwordRef.current?.value ?? "";
 
-    const found = userData.mockUsers.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (!found) {
-      setError("E-mail ou senha inválidos.");
+    if (!username || !password) {
+      setError("Informe e-mail e senha.");
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const u = found as typeof found & {
-        mustChangePassword?: boolean;
-        studentId?: string;
-        github?: string;
-        linkedin?: string;
-      };
-      login({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role as "professor" | "aluno",
-        mustChangePassword: u.mustChangePassword ?? false,
-        studentId: u.studentId,
-        github: u.github,
-        linkedin: u.linkedin,
-      });
+    try {
+      const { token } = await AuthService.login({ username, password });
+      const payload = decodeJwtPayload(token);
+      const sub = (payload?.sub as string | undefined) ?? username;
+      const role = ((payload?.role as string | undefined) ?? "professor") as UserRole;
+      login(
+        {
+          id: sub,
+          name: sub,
+          username: sub,
+          role,
+        },
+        token
+      );
+      navigate(role === "aluno" ? "/student/dashboard" : "/dashboard");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.status === 401 || err.status === 403) {
+          setError("E-mail ou senha inválidos.");
+        } else if (err.status === 0 || err.status >= 500) {
+          setError("Erro no servidor. Tente novamente em instantes.");
+        } else {
+          setError(err.message || "Não foi possível entrar.");
+        }
+      } else {
+        setError("Não foi possível conectar ao servidor. Verifique sua conexão.");
+      }
+    } finally {
       setLoading(false);
-      navigate(u.role === "aluno" ? "/student/dashboard" : "/dashboard");
-    }, 1200);
+    }
   };
 
   return (
@@ -86,21 +92,19 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">E-mail</label>
+              <label className="text-sm font-medium text-foreground">E-mail</label>
               <input
-                ref={emailRef}
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
+                ref={usernameRef}
+                id="username"
+                type="username"
+                placeholder="username"
                 className="w-full h-10 px-3 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-shadow"
-                defaultValue={defaultUser.email}
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
                 <label htmlFor="password" className="text-sm font-medium text-foreground">Senha</label>
-                <button type="button" className="text-xs text-primary hover:underline">Esqueceu a senha?</button>
               </div>
               <div className="relative">
                 <input
@@ -109,7 +113,6 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="w-full h-10 px-3 pr-10 rounded-md border border-input bg-card text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-shadow"
-                  defaultValue={defaultUser.password}
                 />
                 <button
                   type="button"

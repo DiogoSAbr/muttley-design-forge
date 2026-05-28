@@ -48,8 +48,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         {...props}
       >
-        {loading && <span className="spinner" />}
-        {loading ? "Aguarde…" : children}
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {loading && <span className="spinner" />}
+            {loading ? "Aguarde…" : children}
+          </>
+        )}
       </Comp>
     );
   }

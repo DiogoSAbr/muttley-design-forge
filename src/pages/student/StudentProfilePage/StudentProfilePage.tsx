@@ -74,7 +74,7 @@ export default function StudentProfilePage() {
               <UserAvatar name={user?.name ?? "Aluno"} size="lg" />
               <div>
                 <p className="text-base font-semibold text-foreground">{user?.name}</p>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <p className="text-sm text-muted-foreground">{user?.username}</p>
                 {student && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     RA: {student.ra} · {student.curso}
