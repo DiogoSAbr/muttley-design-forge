@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ClientService } from "@/services/ClientService";
-import { ClientCreateDialog } from "./ClientCreateDialog";
+import { ClientCreateDialog } from "@/pages/_shared/components/ClientCreateDialog";
 import { useClientsCache } from "../ClientsCacheContext";
 import type { EventFormValues } from "../eventFormSchema";
 import type { Client, TipoParticipante } from "@/models/Client/Client";

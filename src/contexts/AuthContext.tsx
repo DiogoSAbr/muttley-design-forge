@@ -1,17 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { setAuthToken, getAuthToken } from "@/lib/api/client";
 
-export type UserRole = "professor" | "aluno";
-
 export interface AuthUser {
   id: string;
   name: string;
   username: string;
-  role: UserRole;
-  mustChangePassword?: boolean;
-  studentId?: string;
-  github?: string;
-  linkedin?: string;
 }
 
 interface AuthContextValue {
@@ -19,7 +12,6 @@ interface AuthContextValue {
   token: string | null;
   login: (user: AuthUser, token: string) => void;
   logout: () => void;
-  updateUser: (updates: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -65,12 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
-  function updateUser(updates: Partial<AuthUser>) {
-    setUser((prev) => (prev ? { ...prev, ...updates } : prev));
-  }
-
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

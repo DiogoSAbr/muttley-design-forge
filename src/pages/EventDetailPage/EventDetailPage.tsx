@@ -1,451 +1,284 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import QRCode from "react-qr-code";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Popover, PopoverContent, PopoverTrigger,
-} from "@/components/ui/popover";
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { ApiError } from "@/lib/api/client";
+import { EventService } from "@/services/EventService";
+import type { EventUpdatePayload } from "@/models/Event/EventUpdatePayload";
+import { useEventDetail } from "./hooks/useEventDetail";
+import { ConfirmDialog } from "./components/ConfirmDialog";
+import { EventDetailHeader } from "./components/EventDetailHeader";
 import {
-    ArrowLeft, Search, ArrowUpDown, Check, Calendar, Clock,
-    SlidersHorizontal, ExternalLink, MapPin,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { Medal } from "@/models/Medal/Medal";
-import type { MedalAudience } from "@/models/Event/Event";
-import medalData from "@/mock/Medal.json";
-import attendanceData from "@/mock/Attendance.json";
-import { useEvents } from "@/pages/EventsPage/EventsContext";
+    InformacoesTab,
+    buildDraft,
+    type EventDraft,
+} from "./components/InformacoesTab";
+import { LinksTab } from "./components/LinksTab";
+import { ParticipantsTab } from "./components/ParticipantsTab";
 
-interface AttendanceRecord {
-    id: string;
-    name: string;
-    email: string;
-    cpf: string;
-    linkedin: string;
-}
-
-const allMedals: Medal[] = medalData.mockMedals as Medal[];
-const allAttendances = attendanceData.attendances as Record<string, AttendanceRecord[]>;
-
-const statusConfig: Record<string, { label: string; className: string }> = {
-    agendado: { label: "Agendado", className: "bg-yellow-100 text-yellow-800 border-yellow-200" },
-    cancelado: { label: "Cancelado", className: "bg-red-100 text-red-800 border-red-200" },
-    concluido: { label: "Concluído", className: "bg-emerald-100 text-emerald-800 border-emerald-200" },
-};
-
-const chipColor = (type: string) => {
-    if (type === "professor") return "bg-blue-100 text-blue-800 border-blue-200";
-    if (type === "aluno") return "bg-green-100 text-green-800 border-green-200";
-    return "bg-purple-100 text-purple-800 border-purple-200";
-};
-
-const typeLabel = (type: string) => {
-    if (type === "professor") return "Professor";
-    if (type === "aluno") return "Aluno";
-    return "Outro";
-};
-
-const audienceLabel: Record<MedalAudience, string> = {
-    palestrante: "Palestrante",
-    organizador: "Organizador",
-    ouvintes: "Ouvintes",
-};
-
-const audienceColor: Record<MedalAudience, string> = {
-    palestrante: "bg-violet-100 text-violet-700 border-violet-200",
-    organizador: "bg-blue-100 text-blue-700 border-blue-200",
-    ouvintes: "bg-emerald-100 text-emerald-700 border-emerald-200",
-};
-
-const formatDate = (d: string) => d ? new Date(d + "T00:00:00").toLocaleDateString("pt-BR") : "";
+type ConfirmAction = "save" | "delete" | "finalize" | null;
 
 export default function EventDetailPage() {
-    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    const { events } = useEvents();
+    const navigate = useNavigate();
+    const { toast } = useToast();
+    const { data, loading, error, refetch } = useEventDetail(id);
 
-    const event = id ? events.find(e => e.id === id) : null;
+    const [mode, setMode] = useState<"view" | "edit">("view");
+    const [draft, setDraft] = useState<EventDraft | null>(null);
+    const [signatureFile, setSignatureFile] = useState<File | null>(null);
+    const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
-    const [orgSearch, setOrgSearch] = useState("");
-    const [orgSort, setOrgSort] = useState<"asc" | "desc">("asc");
-    const [orgSortOpen, setOrgSortOpen] = useState(false);
+    useEffect(() => {
+        if (mode === "view") {
+            setDraft(null);
+            setSignatureFile(null);
+        }
+    }, [mode]);
 
-    const [spkSearch, setSpkSearch] = useState("");
-    const [spkSort, setSpkSort] = useState<"asc" | "desc">("asc");
-    const [spkSortOpen, setSpkSortOpen] = useState(false);
+    useEffect(() => {
+        if (data && mode === "edit" && !draft) {
+            setDraft(buildDraft(data));
+        }
+    }, [data, mode, draft]);
 
-    const [medalCatFilter, setMedalCatFilter] = useState("all");
-    const [medalFilterOpen, setMedalFilterOpen] = useState(false);
+    function handleEditToggle() {
+        if (!data) return;
+        if (mode === "edit") {
+            setMode("view");
+            return;
+        }
+        setDraft(buildDraft(data));
+        setSignatureFile(null);
+        setMode("edit");
+    }
 
-    const [attendSort, setAttendSort] = useState<"asc" | "desc">("asc");
-    const [attendSortOpen, setAttendSortOpen] = useState(false);
+    function handleSaveClick() {
+        setConfirmAction("save");
+    }
 
-    const eventMedals = useMemo(() => {
-        if (!event) return [];
-        return allMedals.filter(m => event.medalIds.includes(m.id));
-    }, [event]);
+    async function confirmSave() {
+        if (!id || !draft) return;
+        setActionLoading(true);
+        try {
+            const payload: EventUpdatePayload = {
+                titulo: draft.titulo,
+                dataInicial: draft.dataInicial,
+                dataFinal: draft.dataFinal || null,
+                cargaHoraria: draft.cargaHoraria,
+                pontos: draft.pontos,
+                tipo: draft.tipo,
+                assuntoEvento: draft.assuntoEvento,
+                descricao: draft.descricao || null,
+                competencias: draft.competencias,
+                modalidade: draft.modalidade,
+                endereco: draft.endereco || null,
+                capacidade: draft.capacidade === "" ? null : draft.capacidade,
+                nomeSignatario: draft.nomeSignatario,
+                cargoSignatario: draft.cargoSignatario,
+                participantes: draft.participantes,
+                arquivoAssinaturaSignatario: signatureFile ?? undefined,
+            };
+            await EventService.update(id, payload);
+            toast({ title: "Evento atualizado", description: "As alterações foram salvas." });
+            setConfirmAction(null);
+            setMode("view");
+            refetch();
+        } catch (err) {
+            const message =
+                err instanceof ApiError
+                    ? err.message
+                    : "Não foi possível salvar as alterações.";
+            toast({ title: "Erro ao salvar", description: message, variant: "destructive" });
+        } finally {
+            setActionLoading(false);
+        }
+    }
 
-    const medalCategories = useMemo(() => [...new Set(eventMedals.map(m => m.category))], [eventMedals]);
+    async function confirmDelete() {
+        if (!id) return;
+        setActionLoading(true);
+        try {
+            await EventService.remove(id);
+            toast({ title: "Evento excluído" });
+            setConfirmAction(null);
+            navigate("/events");
+        } catch (err) {
+            const message =
+                err instanceof ApiError
+                    ? err.message
+                    : "Não foi possível excluir o evento.";
+            toast({ title: "Erro ao excluir", description: message, variant: "destructive" });
+        } finally {
+            setActionLoading(false);
+        }
+    }
 
-    const filteredMedals = useMemo(() => {
-        if (medalCatFilter === "all") return eventMedals;
-        return eventMedals.filter(m => m.category === medalCatFilter);
-    }, [eventMedals, medalCatFilter]);
+    async function confirmFinalize() {
+        if (!id) return;
+        setActionLoading(true);
+        try {
+            await EventService.finalize(id);
+            toast({ title: "Evento finalizado" });
+            setConfirmAction(null);
+            refetch();
+        } catch (err) {
+            const message =
+                err instanceof ApiError
+                    ? err.message
+                    : "Não foi possível finalizar o evento.";
+            toast({ title: "Erro ao finalizar", description: message, variant: "destructive" });
+        } finally {
+            setActionLoading(false);
+        }
+    }
 
-    const filteredOrganizers = useMemo(() => {
-        if (!event) return [];
-        let list = [...event.organizers];
-        if (orgSearch) list = list.filter(o => o.name.toLowerCase().includes(orgSearch.toLowerCase()));
-        return list.sort((a, b) =>
-            orgSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
-    }, [event, orgSearch, orgSort]);
+    function handleConfirm() {
+        if (confirmAction === "save") return confirmSave();
+        if (confirmAction === "delete") return confirmDelete();
+        if (confirmAction === "finalize") return confirmFinalize();
+    }
 
-    const filteredSpeakers = useMemo(() => {
-        if (!event) return [];
-        let list = [...(event.speakers ?? [])];
-        if (spkSearch) list = list.filter(s => s.name.toLowerCase().includes(spkSearch.toLowerCase()));
-        return list.sort((a, b) =>
-            spkSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
-    }, [event, spkSearch, spkSort]);
-
-    const attendanceList = useMemo(() => {
-        if (!id) return [];
-        return allAttendances[id] ?? [];
-    }, [id]);
-
-    const sortedAttendance = useMemo(() =>
-        [...attendanceList].sort((a, b) =>
-            attendSort === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-        ), [attendanceList, attendSort]);
-
-    if (!event) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-background">
                 <AppSidebar />
-                <main className="ml-60 p-8 flex items-center justify-center">
-                    <div className="text-center">
-                        <p className="text-muted-foreground mb-4">Evento não encontrado.</p>
-                        <Button variant="outline" onClick={() => navigate("/events")}>
-                            <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
-                        </Button>
+                <main className="ml-60 p-8">
+                    <div className="max-w-5xl mx-auto space-y-6">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-80" />
+                        <Card className="p-6 space-y-4">
+                            <Skeleton className="h-6 w-40" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-3/4" />
+                        </Card>
                     </div>
                 </main>
             </div>
         );
     }
 
-    const status = statusConfig[event.status];
-    const qrUrl = `${window.location.origin}/events/${id}/attendance`;
-
-    const showAttendance = event.status !== "cancelado";
-    const isScheduled = event.status === "agendado";
-    const isConcluded = event.status === "concluido";
-    const hasSpeakers = (event.speakers?.length ?? 0) > 0;
-
-    const SortPopover = ({
-        open, onOpenChange, value, onChange,
-    }: {
-        open: boolean;
-        onOpenChange: (v: boolean) => void;
-        value: "asc" | "desc";
-        onChange: (v: "asc" | "desc") => void;
-    }) => (
-        <Popover open={open} onOpenChange={onOpenChange}>
-            <PopoverTrigger asChild>
-                <Button variant="outline" size="icon">
-                    <ArrowUpDown className="w-4 h-4" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-44 p-2">
-                <p className="text-xs font-medium text-muted-foreground px-2 pb-2">Ordenar</p>
-                <button
-                    className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", value === "asc" && "bg-muted font-medium")}
-                    onClick={() => { onChange("asc"); onOpenChange(false); }}>
-                    {value === "asc" && <Check className="w-3 h-3" />}
-                    <span className={value !== "asc" ? "pl-5" : ""}>A → Z</span>
-                </button>
-                <button
-                    className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted flex items-center gap-2", value === "desc" && "bg-muted font-medium")}
-                    onClick={() => { onChange("desc"); onOpenChange(false); }}>
-                    {value === "desc" && <Check className="w-3 h-3" />}
-                    <span className={value !== "desc" ? "pl-5" : ""}>Z → A</span>
-                </button>
-            </PopoverContent>
-        </Popover>
-    );
+    if (error || !data) {
+        return (
+            <div className="min-h-screen bg-background">
+                <AppSidebar />
+                <main className="ml-60 p-8 flex items-center justify-center">
+                    <div className="text-center space-y-3">
+                        <p className="text-muted-foreground">
+                            {error ?? "Evento não encontrado."}
+                        </p>
+                        <div className="flex items-center justify-center gap-2">
+                            <Button variant="outline" onClick={() => navigate("/events")}>
+                                <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
+                            </Button>
+                            {error && (
+                                <Button variant="outline" onClick={refetch}>
+                                    Tentar novamente
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background">
             <AppSidebar />
             <main className="ml-60 p-8">
-                <div className="max-w-3xl mx-auto animate-fade-in space-y-6">
+                <div className="max-w-5xl mx-auto animate-fade-in space-y-6">
+                    <EventDetailHeader
+                        titulo={data.titulo}
+                        finalized={data.finalized}
+                        mode={mode}
+                        actionLoading={actionLoading}
+                        onBack={() => navigate("/events")}
+                        onEditToggle={handleEditToggle}
+                        onSave={handleSaveClick}
+                        onDelete={() => setConfirmAction("delete")}
+                        onFinalize={() => setConfirmAction("finalize")}
+                    />
 
-                    <div className="flex items-center justify-between">
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/events")}>
-                            <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
-                        </Button>
-                        <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full border", status.className)}>
-                            {status.label}
-                        </span>
-                    </div>
+                    <Tabs defaultValue="informacoes">
+                        <TabsList>
+                            <TabsTrigger value="informacoes">Informações</TabsTrigger>
+                            <TabsTrigger value="participantes" disabled={mode === "edit"}>
+                                Participantes
+                            </TabsTrigger>
+                            <TabsTrigger value="links" disabled={mode === "edit"}>
+                                Links
+                            </TabsTrigger>
+                        </TabsList>
 
-                    <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-                        <div className="flex items-start gap-3">
-                            <Badge variant="secondary" className="shrink-0 mt-0.5">{event.modality}</Badge>
-                            <h1 className="text-xl font-semibold text-foreground leading-tight">{event.title}</h1>
-                        </div>
+                        <TabsContent value="informacoes" className="mt-4">
+                            <InformacoesTab
+                                detail={data}
+                                mode={mode}
+                                draft={draft ?? buildDraft(data)}
+                                onDraftChange={setDraft}
+                                signatureFile={signatureFile}
+                                onSignatureFileChange={setSignatureFile}
+                            />
+                        </TabsContent>
 
-                        {event.description && (
-                            <p className="text-sm text-muted-foreground leading-relaxed">{event.description}</p>
-                        )}
+                        <TabsContent value="participantes" className="mt-4">
+                            <ParticipantsTab eventId={data.id} />
+                        </TabsContent>
 
-                        <div className="flex flex-wrap gap-4 pt-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Calendar className="w-4 h-4 shrink-0" />
-                                <span>
-                                    {formatDate(event.startDate)}
-                                    {event.endDate ? ` a ${formatDate(event.endDate)}` : ""}
-                                </span>
-                            </div>
-                            {(event.startTime || event.endTime) && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Clock className="w-4 h-4 shrink-0" />
-                                    <span>{event.startTime || "—"} — {event.endTime || "—"}</span>
-                                </div>
-                            )}
-                            {event.location && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <MapPin className="w-4 h-4 shrink-0" />
-                                    <span>{event.location}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="bg-card border border-border rounded-xl overflow-hidden">
-                        <Tabs defaultValue={hasSpeakers ? "palestrantes" : "organizadores"}>
-                            <div className="border-b border-border px-6 pt-4">
-                                <TabsList className="w-full justify-start bg-transparent p-0 h-auto gap-0">
-                                    {hasSpeakers && (
-                                        <TabsTrigger
-                                            value="palestrantes"
-                                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
-                                            Palestrantes
-                                        </TabsTrigger>
-                                    )}
-                                    <TabsTrigger
-                                        value="organizadores"
-                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
-                                        Organizadores
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="medalhas"
-                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
-                                        Medalhas
-                                    </TabsTrigger>
-                                    {showAttendance && (
-                                        <TabsTrigger
-                                            value="presenca"
-                                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 pb-3 text-sm font-medium">
-                                            Lista de presença
-                                        </TabsTrigger>
-                                    )}
-                                </TabsList>
-                            </div>
-
-                            {hasSpeakers && (
-                                <TabsContent value="palestrantes" className="p-6 space-y-4 mt-0">
-                                    <div className="flex gap-2">
-                                        <div className="relative flex-1">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                            <Input placeholder="Buscar palestrante..." value={spkSearch}
-                                                onChange={e => setSpkSearch(e.target.value)} className="pl-9" />
-                                        </div>
-                                        <SortPopover
-                                            open={spkSortOpen} onOpenChange={setSpkSortOpen}
-                                            value={spkSort} onChange={setSpkSort}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        {filteredSpeakers.map((spk, i) => (
-                                            <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-muted/40 transition-colors">
-                                                <span className="text-sm font-medium text-foreground">{spk.name}</span>
-                                                <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full border", chipColor(spk.type))}>
-                                                    {typeLabel(spk.type)}
-                                                </span>
-                                            </div>
-                                        ))}
-                                        {filteredSpeakers.length === 0 && (
-                                            <p className="text-sm text-muted-foreground text-center py-8">Nenhum palestrante encontrado.</p>
-                                        )}
-                                    </div>
-                                </TabsContent>
-                            )}
-
-                            <TabsContent value="organizadores" className="p-6 space-y-4 mt-0">
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                        <Input placeholder="Buscar organizador..." value={orgSearch}
-                                            onChange={e => setOrgSearch(e.target.value)} className="pl-9" />
-                                    </div>
-                                    <SortPopover
-                                        open={orgSortOpen} onOpenChange={setOrgSortOpen}
-                                        value={orgSort} onChange={setOrgSort}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    {filteredOrganizers.map((org, i) => (
-                                        <div key={i} className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-muted/40 transition-colors">
-                                            <span className="text-sm font-medium text-foreground">{org.name}</span>
-                                            <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full border", chipColor(org.type))}>
-                                                {typeLabel(org.type)}
-                                            </span>
-                                        </div>
-                                    ))}
-                                    {filteredOrganizers.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">Nenhum organizador encontrado.</p>
-                                    )}
-                                </div>
-                            </TabsContent>
-
-                            <TabsContent value="medalhas" className="p-6 space-y-4 mt-0">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm text-muted-foreground">
-                                        {filteredMedals.length} medalha(s)
-                                        {medalCatFilter !== "all" && ` em "${medalCatFilter}"`}
-                                    </p>
-                                    <Popover open={medalFilterOpen} onOpenChange={setMedalFilterOpen}>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="outline" size="sm" className={cn(medalCatFilter !== "all" && "border-primary text-primary")}>
-                                                <SlidersHorizontal className="w-3.5 h-3.5 mr-1.5" />
-                                                {medalCatFilter === "all" ? "Categoria" : medalCatFilter}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent align="end" className="w-48 p-2">
-                                            <p className="text-xs font-medium text-muted-foreground px-2 pb-1">Filtrar por categoria</p>
-                                            <button
-                                                className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted", medalCatFilter === "all" && "bg-muted font-medium")}
-                                                onClick={() => { setMedalCatFilter("all"); setMedalFilterOpen(false); }}>
-                                                Todas
-                                            </button>
-                                            {medalCategories.map(cat => (
-                                                <button key={cat}
-                                                    className={cn("w-full text-left text-sm px-2 py-1.5 rounded hover:bg-muted", medalCatFilter === cat && "bg-muted font-medium")}
-                                                    onClick={() => { setMedalCatFilter(cat); setMedalFilterOpen(false); }}>
-                                                    {cat}
-                                                </button>
-                                            ))}
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-
-                                <div className="space-y-2">
-                                    {filteredMedals.map(medal => {
-                                        const auds: MedalAudience[] = (event.medalAudiences?.[medal.id] as MedalAudience[] | undefined) ?? ["palestrante", "organizador", "ouvintes"];
-                                        return (
-                                            <div key={medal.id} className="flex items-start gap-3 px-3 py-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-medium text-foreground">{medal.name}</p>
-                                                    {medal.description && (
-                                                        <p className="text-xs text-muted-foreground mt-0.5">{medal.description}</p>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                                                    <Badge variant="secondary" className="text-xs">{medal.category}</Badge>
-                                                    {auds.map(a => (
-                                                        <span key={a} className={cn(
-                                                            "text-[10px] font-medium px-2 py-0.5 rounded-full border",
-                                                            audienceColor[a]
-                                                        )}>
-                                                            {audienceLabel[a]}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {filteredMedals.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">Nenhuma medalha encontrada.</p>
-                                    )}
-                                </div>
-                            </TabsContent>
-
-                            {showAttendance && (
-                                <TabsContent value="presenca" className="p-6 mt-0">
-                                    {isScheduled && (
-                                        <div className="flex flex-col items-center gap-6 py-4">
-                                            <div className="text-center">
-                                                <p className="text-sm font-medium text-foreground mb-1">QR Code de presença</p>
-                                                <p className="text-xs text-muted-foreground">Escaneie para registrar presença no evento</p>
-                                            </div>
-                                            <div className="p-4 bg-white rounded-xl border border-border shadow-sm">
-                                                <QRCode value={qrUrl} size={180} />
-                                            </div>
-                                            <p className="text-xs text-muted-foreground break-all max-w-xs text-center">{qrUrl}</p>
-                                        </div>
-                                    )}
-
-                                    {isConcluded && (
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <p className="text-sm text-muted-foreground">{sortedAttendance.length} presença(s) registrada(s)</p>
-                                                <SortPopover
-                                                    open={attendSortOpen} onOpenChange={setAttendSortOpen}
-                                                    value={attendSort} onChange={setAttendSort}
-                                                />
-                                            </div>
-
-                                            <div className="rounded-lg border border-border overflow-hidden">
-                                                <table className="w-full text-sm">
-                                                    <thead>
-                                                        <tr className="border-b border-border bg-muted/50">
-                                                            <th className="text-left px-4 py-3 font-medium text-muted-foreground">Nome</th>
-                                                            <th className="text-left px-4 py-3 font-medium text-muted-foreground">E-mail</th>
-                                                            <th className="text-left px-4 py-3 font-medium text-muted-foreground">CPF</th>
-                                                            <th className="text-left px-4 py-3 font-medium text-muted-foreground">LinkedIn</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {sortedAttendance.map(record => (
-                                                            <tr key={record.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                                                                <td className="px-4 py-3 font-medium text-foreground">{record.name}</td>
-                                                                <td className="px-4 py-3 text-muted-foreground">{record.email}</td>
-                                                                <td className="px-4 py-3 text-muted-foreground">{record.cpf}</td>
-                                                                <td className="px-4 py-3">
-                                                                    {record.linkedin ? (
-                                                                        <a href={record.linkedin} target="_blank" rel="noopener noreferrer"
-                                                                            className="inline-flex items-center gap-1 text-primary hover:underline text-xs">
-                                                                            Ver perfil <ExternalLink className="w-3 h-3" />
-                                                                        </a>
-                                                                    ) : (
-                                                                        <span className="text-muted-foreground">—</span>
-                                                                    )}
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                        {sortedAttendance.length === 0 && (
-                                                            <tr>
-                                                                <td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">
-                                                                    Nenhuma presença registrada.
-                                                                </td>
-                                                            </tr>
-                                                        )}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    )}
-                                </TabsContent>
-                            )}
-                        </Tabs>
-                    </div>
+                        <TabsContent value="links" className="mt-4">
+                            <LinksTab
+                                qrCodeInscricao={data.qrCodeInscricao}
+                                urlInscricao={data.urlInscricao}
+                                qrCodeConfirmacao={data.qrCodeConfirmacao}
+                                urlConfirmacao={data.urlConfirmacao}
+                            />
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </main>
+
+            <ConfirmDialog
+                open={confirmAction === "save"}
+                onOpenChange={open => !open && setConfirmAction(null)}
+                title="Salvar alterações?"
+                description="As alterações realizadas serão aplicadas ao evento."
+                confirmLabel="Salvar"
+                loading={actionLoading}
+                onConfirm={handleConfirm}
+            />
+
+            <ConfirmDialog
+                open={confirmAction === "delete"}
+                onOpenChange={open => !open && setConfirmAction(null)}
+                title="Excluir evento?"
+                description="Esta ação não poderá ser desfeita. O evento será permanentemente removido."
+                confirmLabel="Excluir"
+                variant="destructive"
+                loading={actionLoading}
+                onConfirm={handleConfirm}
+            />
+
+            <ConfirmDialog
+                open={confirmAction === "finalize"}
+                onOpenChange={open => !open && setConfirmAction(null)}
+                title="Finalizar evento?"
+                description="O evento será marcado como finalizado e não aceitará novas alterações de status."
+                confirmLabel="Finalizar"
+                loading={actionLoading}
+                onConfirm={handleConfirm}
+            />
         </div>
     );
 }

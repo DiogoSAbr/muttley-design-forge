@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthService } from "@/services/AuthService";
 import { ApiError, decodeJwtPayload } from "@/lib/api/client";
-import type { UserRole } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,17 +32,15 @@ export default function LoginPage() {
       const { token } = await AuthService.login({ username, password });
       const payload = decodeJwtPayload(token);
       const sub = (payload?.sub as string | undefined) ?? username;
-      const role = ((payload?.role as string | undefined) ?? "professor") as UserRole;
       login(
         {
           id: sub,
           name: sub,
           username: sub,
-          role,
         },
         token
       );
-      navigate(role === "aluno" ? "/student/dashboard" : "/dashboard");
+      navigate("/events");
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.status === 401 || err.status === 403) {

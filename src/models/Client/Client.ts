@@ -11,11 +11,3 @@ export interface ParticipanteEvento {
     clientId: string;
     tipoParticipante: TipoParticipante;
 }
-
-export interface PageResponse<T> {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-    number: number;
-    size: number;
-}

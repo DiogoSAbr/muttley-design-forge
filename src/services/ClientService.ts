@@ -1,11 +1,26 @@
 import { apiFetch } from "@/lib/api/client";
-import type { Client, PageResponse } from "@/models/Client/Client";
+import type { Client } from "@/models/Client/Client";
+import type {
+    ClientListResponse,
+    ClientSortOption,
+} from "@/models/Client/ClientListResponse";
+import type {
+    ClientEventHistoryResponse,
+    ClientEventHistorySortOption,
+} from "@/models/Client/ClientEventHistory";
 
 export interface ListClientsParams {
     nome?: string;
-    page?: number;
-    size?: number;
-    sort?: string;
+    page: number;
+    size: number;
+    sort: ClientSortOption;
+}
+
+export interface ListClientHistoryParams {
+    titulo?: string;
+    page: number;
+    size: number;
+    sort: ClientEventHistorySortOption;
 }
 
 export interface CreateClientRequest {
@@ -15,10 +30,16 @@ export interface CreateClientRequest {
 }
 
 export const ClientService = {
-    list(params: ListClientsParams = {}): Promise<PageResponse<Client>> {
-        const { nome = "", page = 0, size = 10, sort = "nome,desc" } = params;
-        return apiFetch<PageResponse<Client>>("clients", {
-            params: { nome, page, size, sort },
+    list(params: ListClientsParams, signal?: AbortSignal): Promise<ClientListResponse> {
+        return apiFetch<ClientListResponse>("clients", {
+            method: "GET",
+            params: {
+                nome: params.nome?.trim() ? params.nome.trim() : undefined,
+                page: params.page,
+                size: params.size,
+                sort: params.sort,
+            },
+            signal,
         });
     },
 
@@ -27,5 +48,25 @@ export const ClientService = {
             method: "POST",
             body: data,
         });
+    },
+
+    listHistory(
+        clientId: string,
+        params: ListClientHistoryParams,
+        signal?: AbortSignal,
+    ): Promise<ClientEventHistoryResponse> {
+        return apiFetch<ClientEventHistoryResponse>(
+            `clients/${clientId}/historico-eventos`,
+            {
+                method: "GET",
+                params: {
+                    titulo: params.titulo?.trim() ? params.titulo.trim() : undefined,
+                    page: params.page,
+                    size: params.size,
+                    sort: params.sort,
+                },
+                signal,
+            },
+        );
     },
 };

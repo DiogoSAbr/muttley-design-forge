@@ -1,25 +1,11 @@
 import { cn } from "@/lib/utils";
 import { NavLink as RouterNavLink, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Award,
-  History,
-  Users,
-  Medal,
-  LogOut,
-  Calendar,
-  Presentation,
-} from "lucide-react";
+import { Award, Users, LogOut, Calendar } from "lucide-react";
 import { UserAvatar } from "./UserAvatar";
 
 const navItems = [
-  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Emitir medalha", path: "/emit", icon: Award },
-  { label: "Histórico", path: "/history", icon: History },
-  { label: "Gerenciar medalhas", path: "/medals", icon: Medal },
-  { label: "Alunos", path: "/students", icon: Users },
   { label: "Eventos", path: "/events", icon: Calendar },
-  { label: "Professores", path: "/teachers", icon: Presentation }
+  { label: "Usuários", path: "/users", icon: Users },
 ];
 
 export function AppSidebar() {

@@ -1,8 +1,0 @@
-{
-    "mockCourses": [
-        { "id": "1", "name": "Análise e Desenvolvimento de Sistemas", "abbreviation": "ADS" },
-        { "id": "2", "name": "Gestão da Tecnologia da Informação", "abbreviation": "GTI" },
-        { "id": "3", "name": "Banco de Dados", "abbreviation": "BD" },
-        { "id": "4", "name": "Redes de Computadores", "abbreviation": "RC" }
-    ]
-}

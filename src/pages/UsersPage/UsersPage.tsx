@@ -1,38 +1,50 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Plus, Search, UserX } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CalendarX, Eye, Plus, Search } from "lucide-react";
-import { EventStatusBadge } from "@/pages/EventDetailPage/components/EventStatusBadge";
-import { useEventsList } from "./hooks/useEventsList";
-import { EventsTableHeader } from "./components/EventsTableHeader";
+import { ClientCreateDialog } from "@/pages/_shared/components/ClientCreateDialog";
 import { DataTablePagination } from "@/pages/_shared/components/DataTablePagination";
+import { maskCpf } from "@/lib/cpf";
+import { useUsersList } from "./hooks/useUsersList";
+import { UsersTableHeader } from "./components/UsersTableHeader";
 
 const SKELETON_ROWS = 5;
-const COLUMN_COUNT = 5;
+const COLUMN_COUNT = 8;
 
-const formatDate = (d: string) =>
-    d ? new Date(d + "T00:00:00").toLocaleDateString("pt-BR") : "—";
+const formatDate = (d: string) => {
+    if (!d) return "—";
+    try {
+        return format(parseISO(d), "dd/MM/yyyy", { locale: ptBR });
+    } catch {
+        return "—";
+    }
+};
 
-export default function EventsPage() {
+export default function UsersPage() {
     const navigate = useNavigate();
     const {
         data,
         loading,
         error,
-        titulo,
+        nome,
         sort,
         page,
         size,
-        setTitulo,
+        setNome,
         setPage,
         setSort,
         refetch,
-    } = useEventsList();
+    } = useUsersList();
+
+    const [createOpen, setCreateOpen] = useState(false);
 
     const totalElements = data?.totalElements ?? 0;
-    const events = data?.content ?? [];
+    const users = data?.content ?? [];
 
     return (
         <div className="min-h-screen bg-background">
@@ -41,13 +53,13 @@ export default function EventsPage() {
                 <div className="max-w-5xl mx-auto animate-fade-in">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                         <div>
-                            <h1 className="text-xl font-semibold text-foreground">Gerenciar eventos</h1>
+                            <h1 className="text-xl font-semibold text-foreground">Gerenciar usuários</h1>
                             <p className="text-sm text-muted-foreground">
-                                {totalElements} eventos cadastrados
+                                {totalElements} usuários cadastrados
                             </p>
                         </div>
-                        <Button onClick={() => navigate("/events/new")}>
-                            <Plus className="w-4 h-4 mr-2" /> Cadastrar Evento
+                        <Button onClick={() => setCreateOpen(true)}>
+                            <Plus className="w-4 h-4 mr-2" /> Cadastrar Usuário
                         </Button>
                     </div>
 
@@ -55,10 +67,10 @@ export default function EventsPage() {
                         <div className="relative w-full sm:max-w-sm">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
-                                placeholder="Pesquisar por título..."
+                                placeholder="Pesquise pelo nome"
                                 className="pl-9"
-                                value={titulo}
-                                onChange={e => setTitulo(e.target.value)}
+                                value={nome}
+                                onChange={e => setNome(e.target.value)}
                             />
                         </div>
                     </div>
@@ -66,16 +78,19 @@ export default function EventsPage() {
                     <div className="bg-card border border-border rounded-xl overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
-                                <EventsTableHeader sort={sort} onSortChange={setSort} />
+                                <UsersTableHeader sort={sort} onSortChange={setSort} />
                                 <tbody>
                                     {loading &&
                                         Array.from({ length: SKELETON_ROWS }).map((_, idx) => (
                                             <tr key={`skeleton-${idx}`} className="border-b border-border last:border-0">
                                                 <td className="p-3"><Skeleton className="h-4 w-40" /></td>
+                                                <td className="p-3"><Skeleton className="h-4 w-28" /></td>
+                                                <td className="p-3"><Skeleton className="h-4 w-44" /></td>
+                                                <td className="p-3"><Skeleton className="h-4 w-12" /></td>
+                                                <td className="p-3"><Skeleton className="h-4 w-12" /></td>
+                                                <td className="p-3"><Skeleton className="h-4 w-12" /></td>
                                                 <td className="p-3"><Skeleton className="h-4 w-24" /></td>
-                                                <td className="p-3"><Skeleton className="h-4 w-24" /></td>
-                                                <td className="p-3"><Skeleton className="h-5 w-24 rounded-full" /></td>
-                                                <td className="p-3"><Skeleton className="h-8 w-8 mx-auto rounded-md" /></td>
+                                                <td className="p-3"><Skeleton className="h-8 w-28 mx-auto rounded-md" /></td>
                                             </tr>
                                         ))}
 
@@ -92,43 +107,41 @@ export default function EventsPage() {
                                         </tr>
                                     )}
 
-                                    {!loading && !error && events.length === 0 && (
+                                    {!loading && !error && users.length === 0 && (
                                         <tr>
                                             <td colSpan={COLUMN_COUNT} className="p-10">
                                                 <div className="flex flex-col items-center gap-3 text-center">
                                                     <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
-                                                        <CalendarX className="w-5 h-5 text-muted-foreground" />
+                                                        <UserX className="w-5 h-5 text-muted-foreground" />
                                                     </div>
                                                     <p className="text-sm text-muted-foreground">
-                                                        Nenhum evento encontrado.
+                                                        Nenhum usuário encontrado.
                                                     </p>
                                                 </div>
                                             </td>
                                         </tr>
                                     )}
 
-                                    {!loading && !error && events.map(ev => (
+                                    {!loading && !error && users.map(user => (
                                         <tr
-                                            key={ev.id}
+                                            key={user.id}
                                             className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors"
                                         >
-                                            <td className="p-3 font-medium text-foreground">{ev.titulo}</td>
-                                            <td className="p-3 text-muted-foreground">{ev.modalidade}</td>
-                                            <td className="p-3 text-muted-foreground whitespace-nowrap">
-                                                {formatDate(ev.dataInicial)}
+                                            <td className="p-3 font-medium text-foreground truncate">{user.nome}</td>
+                                            <td className="p-3 text-muted-foreground whitespace-nowrap truncate">
+                                                {maskCpf(user.cpf)}
                                             </td>
-                                            <td className="p-3">
-                                                <EventStatusBadge finalized={ev.finalized} />
-                                            </td>
+                                            <td className="p-3 text-muted-foreground truncate">{user.email}</td>
+                                            <td className="p-3 text-foreground text-center">{user.totalPontos}</td>
+                                            <td className="p-3 text-foreground text-center">{user.totalCertificados}</td>
+                                            <td className="p-3 text-foreground text-center">{user.totalMedalhas}</td>
                                             <td className="p-3 text-center">
                                                 <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8 mx-auto"
-                                                    onClick={() => navigate(`/events/${ev.id}`)}
-                                                    aria-label="Ver detalhes"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => navigate(`/users/${user.id}/historico`)}
                                                 >
-                                                    <Eye className="w-4 h-4" />
+                                                    Ver Histórico
                                                 </Button>
                                             </td>
                                         </tr>
@@ -150,6 +163,12 @@ export default function EventsPage() {
                     </div>
                 </div>
             </main>
+
+            <ClientCreateDialog
+                open={createOpen}
+                onOpenChange={setCreateOpen}
+                onCreated={() => refetch()}
+            />
         </div>
     );
 }
