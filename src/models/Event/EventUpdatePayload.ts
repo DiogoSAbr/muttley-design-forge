@@ -5,6 +5,8 @@ export interface EventUpdatePayload {
     titulo: string;
     dataInicial: string;
     dataFinal?: string | null;
+    horaInicial: string;
+    horaFinal: string;
     cargaHoraria: number;
     pontos: number;
     tipo: EventoTipo;

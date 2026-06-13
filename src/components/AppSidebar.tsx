@@ -46,11 +46,6 @@ export function AppSidebar() {
 
       <div className="px-3 py-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3">
-          <UserAvatar name="Prof. Diogo Santana" size="sm" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-sidebar-foreground truncate font-medium">Diogo Santana</p>
-            <p className="text-[11px] text-sidebar-muted truncate">Professor</p>
-          </div>
           <button
             className="text-sidebar-muted hover:text-sidebar-foreground transition-colors"
             title="Sair"

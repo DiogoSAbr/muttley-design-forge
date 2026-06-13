@@ -28,6 +28,8 @@ export const eventFormSchema = z
             .max(20, "Máximo 20 caracteres"),
         dataInicial: z.string().min(1, "Data inicial é obrigatória"),
         dataFinal: z.string().optional().or(z.literal("")),
+        horaInicial: z.string().min(1, "Hora inicial é obrigatória"),
+        horaFinal: z.string().min(1, "Hora final é obrigatória"),
         cargaHoraria: z
             .number({ invalid_type_error: "Informe a carga horária" })
             .int("Use número inteiro")
@@ -103,12 +105,25 @@ export const eventFormSchema = z
                 });
             }
         }
+        const mesmoDia =
+            !data.dataFinal ||
+            data.dataFinal === "" ||
+            data.dataFinal === data.dataInicial;
+        if (mesmoDia && data.horaInicial && data.horaFinal) {
+            if (data.horaFinal <= data.horaInicial) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["horaFinal"],
+                    message: "Hora final deve ser posterior à inicial",
+                });
+            }
+        }
     });
 
 export type EventFormValues = z.infer<typeof eventFormSchema>;
 
 export const STEP_FIELDS: (keyof EventFormValues)[][] = [
-    ["titulo", "dataInicial", "dataFinal", "cargaHoraria", "pontos"],
+    ["titulo", "dataInicial", "dataFinal", "horaInicial", "horaFinal", "cargaHoraria", "pontos"],
     ["tipo", "assuntoEvento", "competencias", "descricao"],
     ["modalidade", "endereco", "capacidade"],
     ["participantesEquipe"],
@@ -127,6 +142,8 @@ export const emptyFormValues: Partial<EventFormValues> = {
     titulo: "",
     dataInicial: "",
     dataFinal: "",
+    horaInicial: "",
+    horaFinal: "",
     cargaHoraria: undefined,
     pontos: undefined,
     tipo: undefined,

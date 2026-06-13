@@ -70,12 +70,36 @@ export default function EventDetailPage() {
 
     async function confirmSave() {
         if (!id || !draft) return;
+
+        if (!draft.horaInicial || !draft.horaFinal) {
+            setConfirmAction(null);
+            toast({
+                title: "Horários obrigatórios",
+                description: "Informe a hora inicial e a hora final.",
+                variant: "destructive",
+            });
+            return;
+        }
+        const mesmoDia =
+            !draft.dataFinal || draft.dataFinal === draft.dataInicial;
+        if (mesmoDia && draft.horaFinal <= draft.horaInicial) {
+            setConfirmAction(null);
+            toast({
+                title: "Horário inválido",
+                description: "A hora final deve ser posterior à inicial.",
+                variant: "destructive",
+            });
+            return;
+        }
+
         setActionLoading(true);
         try {
             const payload: EventUpdatePayload = {
                 titulo: draft.titulo,
                 dataInicial: draft.dataInicial,
                 dataFinal: draft.dataFinal || null,
+                horaInicial: draft.horaInicial,
+                horaFinal: draft.horaFinal,
                 cargaHoraria: draft.cargaHoraria,
                 pontos: draft.pontos,
                 tipo: draft.tipo,

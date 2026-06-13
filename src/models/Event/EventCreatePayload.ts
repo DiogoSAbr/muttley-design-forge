@@ -16,6 +16,8 @@ export interface EventCreatePayload {
     titulo: string;
     dataInicial: string;
     dataFinal?: string;
+    horaInicial: string;
+    horaFinal: string;
     cargaHoraria: number;
     pontos: number;
     tipo: EventoTipo;

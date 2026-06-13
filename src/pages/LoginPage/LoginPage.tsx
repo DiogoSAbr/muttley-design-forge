@@ -67,9 +67,6 @@ export default function LoginPage() {
           <h1 className="text-3xl font-semibold text-sidebar-primary-foreground mb-3 tracking-tight">
             Muttley
           </h1>
-          <p className="text-sidebar-muted text-base leading-relaxed">
-            Emita medalhas digitais de competências e publique automaticamente no LinkedIn dos seus alunos.
-          </p>
         </div>
       </div>
 

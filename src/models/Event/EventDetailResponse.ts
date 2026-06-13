@@ -18,6 +18,8 @@ export interface EventDetail {
     titulo: string;
     dataInicial: string;
     dataFinal: string | null;
+    horaInicial: string | null;
+    horaFinal: string | null;
     cargaHoraria: number;
     pontos: number;
     tipo: EventoTipo;

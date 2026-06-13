@@ -142,6 +142,8 @@ export default function EventFormPage() {
                 titulo: values.titulo,
                 dataInicial: values.dataInicial,
                 dataFinal: values.dataFinal || undefined,
+                horaInicial: values.horaInicial,
+                horaFinal: values.horaFinal,
                 cargaHoraria: values.cargaHoraria,
                 pontos: values.pontos,
                 tipo: values.tipo,

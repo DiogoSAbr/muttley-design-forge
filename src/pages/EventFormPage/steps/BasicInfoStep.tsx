@@ -81,6 +81,41 @@ function DateField({
     );
 }
 
+function TimeField({
+    name,
+    label,
+    required,
+}: {
+    name: "horaInicial" | "horaFinal";
+    label: string;
+    required?: boolean;
+}) {
+    const { control, formState: { errors } } = useFormContext<EventFormValues>();
+    const errorMessage = errors[name]?.message as string | undefined;
+
+    return (
+        <Controller
+            control={control}
+            name={name}
+            render={({ field }) => (
+                <div>
+                    <Label htmlFor={name}>
+                        {label} {required && "*"}
+                    </Label>
+                    <Input
+                        id={name}
+                        type="time"
+                        className="mt-1"
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                    />
+                    <FieldError message={errorMessage} />
+                </div>
+            )}
+        />
+    );
+}
+
 function CargaHorariaField() {
     const { control, formState: { errors } } = useFormContext<EventFormValues>();
     const errorMessage = errors.cargaHoraria?.message as string | undefined;
@@ -157,6 +192,11 @@ export function BasicInfoStep() {
             <div className="grid grid-cols-2 gap-4">
                 <DateField name="dataInicial" label="Data inicial" required />
                 <DateField name="dataFinal" label="Data final" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <TimeField name="horaInicial" label="Hora inicial" required />
+                <TimeField name="horaFinal" label="Hora final" required />
             </div>
 
             <CargaHorariaField />

@@ -38,6 +38,8 @@ export interface EventDraft {
     titulo: string;
     dataInicial: string;
     dataFinal: string;
+    horaInicial: string;
+    horaFinal: string;
     cargaHoraria: number;
     pontos: number;
     tipo: EventoTipo;
@@ -57,6 +59,8 @@ export function buildDraft(detail: EventDetail): EventDraft {
         titulo: detail.titulo,
         dataInicial: detail.dataInicial,
         dataFinal: detail.dataFinal ?? "",
+        horaInicial: toTimeInput(detail.horaInicial),
+        horaFinal: toTimeInput(detail.horaFinal),
         cargaHoraria: detail.cargaHoraria,
         pontos: detail.pontos,
         tipo: detail.tipo,
@@ -93,6 +97,12 @@ const TIPO_PARTICIPANTE_LIST: TipoParticipante[] = [
 
 const formatDate = (d: string | null | undefined) =>
     d ? new Date(d + "T00:00:00").toLocaleDateString("pt-BR") : null;
+
+const toTimeInput = (value: string | null | undefined) =>
+    value ? value.slice(0, 5) : "";
+
+const formatTime = (value: string | null | undefined) =>
+    value ? value.slice(0, 5) : null;
 
 const tipoLabel = (value: EventoTipo) =>
     TIPO_OPTIONS.find(o => o.value === value)?.label ?? value;
@@ -175,6 +185,27 @@ function DateField({
                     />
                 </PopoverContent>
             </Popover>
+        </div>
+    );
+}
+
+function TimeField({
+    label,
+    value,
+    onChange,
+}: {
+    label: string;
+    value: string;
+    onChange: (next: string) => void;
+}) {
+    return (
+        <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{label}</Label>
+            <Input
+                type="time"
+                value={value}
+                onChange={e => onChange(e.target.value)}
+            />
         </div>
     );
 }
@@ -328,6 +359,26 @@ export function InformacoesTab({
                         />
                     ) : (
                         <ViewField label="Data Final" value={formatDate(detail.dataFinal)} />
+                    )}
+
+                    {isEdit ? (
+                        <TimeField
+                            label="Hora Inicial"
+                            value={draft.horaInicial}
+                            onChange={value => update("horaInicial", value)}
+                        />
+                    ) : (
+                        <ViewField label="Hora Inicial" value={formatTime(detail.horaInicial)} />
+                    )}
+
+                    {isEdit ? (
+                        <TimeField
+                            label="Hora Final"
+                            value={draft.horaFinal}
+                            onChange={value => update("horaFinal", value)}
+                        />
+                    ) : (
+                        <ViewField label="Hora Final" value={formatTime(detail.horaFinal)} />
                     )}
 
                     {isEdit ? (

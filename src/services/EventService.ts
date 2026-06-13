@@ -35,12 +35,19 @@ function appendIfDefined(form: FormData, key: string, value: unknown) {
     form.append(key, String(value));
 }
 
+// Normaliza "HH:mm" (valor do input) para "HH:mm:ss" esperado pelo LocalTime do backend.
+function toLocalTime(value: string) {
+    return value.length === 5 ? `${value}:00` : value;
+}
+
 export const EventService = {
     create(input: CreateEventInput): Promise<unknown> {
         const form = new FormData();
         appendIfDefined(form, "titulo", input.titulo);
         appendIfDefined(form, "dataInicial", input.dataInicial);
         form.append("dataFinal", input.dataFinal ?? "");
+        form.append("horaInicial", toLocalTime(input.horaInicial));
+        form.append("horaFinal", toLocalTime(input.horaFinal));
         appendIfDefined(form, "cargaHoraria", input.cargaHoraria);
         appendIfDefined(form, "pontos", input.pontos);
         appendIfDefined(form, "tipo", input.tipo);
@@ -89,6 +96,8 @@ export const EventService = {
         appendIfDefined(form, "titulo", input.titulo);
         appendIfDefined(form, "dataInicial", input.dataInicial);
         form.append("dataFinal", input.dataFinal ?? "");
+        form.append("horaInicial", toLocalTime(input.horaInicial));
+        form.append("horaFinal", toLocalTime(input.horaFinal));
         appendIfDefined(form, "cargaHoraria", input.cargaHoraria);
         appendIfDefined(form, "pontos", input.pontos);
         appendIfDefined(form, "tipo", input.tipo);
